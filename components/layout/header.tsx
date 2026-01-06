@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "@/components/mode-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
-import { Calculator, TrendingUp, PiggyBank, Menu, X } from "lucide-react";
+import { Calculator, TrendingUp, PiggyBank, Building2, Menu, X } from "lucide-react";
 import { useTranslationStore } from "@/lib/translations";
 import { commonTranslations } from "@/lib/translations/common";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ const navigation = [
   { name: "compound", href: "/compound", icon: TrendingUp },
   // { name: "tax", href: "/tax", icon: PieChart },
   { name: "pension", href: "/pension", icon: PiggyBank },
+  { name: "realestate", href: "/realestate", icon: Building2 },
 ] as const;
 
 export function Header() {
