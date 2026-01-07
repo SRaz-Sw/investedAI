@@ -107,9 +107,11 @@ export const ProjectionChart = memo(function ProjectionChart({
               </div>
             </div>
             
-            <div className="border-t pt-2 mt-2 flex justify-between font-medium">
-              <span>{t.tooltipEquityPercent}</span>
-              <span className="text-amber-600">{point.equityPercent.toFixed(0)}%</span>
+            <div className="border-t pt-2 mt-2 flex justify-between font-medium bg-violet-50 dark:bg-violet-950/30 -mx-4 px-4 py-2 rounded-b-xl">
+              <span className="text-violet-700 dark:text-violet-300">{t.netWorth}</span>
+              <span className="text-violet-700 dark:text-violet-300 font-bold">
+                {formatAxisValue(point.cumulativeCashFlow + point.propertyValue - point.mortgageBalance)}
+              </span>
             </div>
           </div>
         </div>

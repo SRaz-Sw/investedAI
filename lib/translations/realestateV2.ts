@@ -84,6 +84,7 @@ export interface RealEstateV2Translation {
   tooltipNetCashFlow: string;
   tooltipCumulative: string;
   tooltipEquityPercent: string;
+  netWorth: string;
   
   // Storyline
   storylineIntro: string;
@@ -194,6 +195,7 @@ export const realEstateV2Translations: Record<Language, RealEstateV2Translation>
     tooltipNetCashFlow: "Net Cash Flow",
     tooltipCumulative: "Cumulative Cash Flow",
     tooltipEquityPercent: "Ownership",
+    netWorth: "Net Worth",
     
     // Storyline
     storylineIntro: "If you invest",
@@ -303,6 +305,7 @@ export const realEstateV2Translations: Record<Language, RealEstateV2Translation>
     tooltipNetCashFlow: "תזרים נטו",
     tooltipCumulative: "תזרים מצטבר",
     tooltipEquityPercent: "בעלות",
+    netWorth: "שווי נקי",
     
     // Storyline
     storylineIntro: "אם תשקיע",
