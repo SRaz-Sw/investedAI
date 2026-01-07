@@ -28,6 +28,15 @@ import {
 import type { ChartDataPoint } from '../types';
 import { formatAxisValue } from '../utils/calculations';
 
+// Type for Legend formatter entry parameter
+interface LegendFormatterEntry {
+  value: string;
+  dataKey?: string;
+  color?: string;
+  type?: string;
+  payload?: unknown;
+}
+
 interface ProjectionChartProps {
   data: ChartDataPoint[];
   mortgageTermYears: number;
@@ -195,7 +204,7 @@ export const ProjectionChart = memo(function ProjectionChart({
                 handleLegendClick(e.dataKey as string);
               }
             }}
-            formatter={(value, entry) => {
+            formatter={(value, entry: LegendFormatterEntry) => {
               const dataKey = entry.dataKey as ToggleableKey;
               const isHidden = hiddenLines.has(dataKey);
               return (
