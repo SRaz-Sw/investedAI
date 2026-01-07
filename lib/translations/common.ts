@@ -7,6 +7,7 @@ export interface CommonTranslation {
   tax: string;
   pension: string;
   realestate: string;
+  realestateV2: string;
   changeLanguage: string;
   changeTheme: string;
   light: string;
@@ -37,6 +38,7 @@ export const commonTranslations: Record<Language, CommonTranslation> = {
     tax: "Tax Efficiency",
     pension: "Pension Planning",
     realestate: "Real Estate",
+    realestateV2: "Real Estate V2",
     changeLanguage: "Change language",
     changeTheme: "Toggle theme",
     light: "Light",
@@ -65,6 +67,7 @@ export const commonTranslations: Record<Language, CommonTranslation> = {
     tax: "יעילות מס",
     pension: "תכנון פנסיה",
     realestate: "נדל\"ן",
+    realestateV2: "נדל\"ן V2",
     changeLanguage: "שנה שפה",
     changeTheme: "שנה ערכת נושא",
     light: "בהיר",

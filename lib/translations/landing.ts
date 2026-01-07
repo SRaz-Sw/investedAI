@@ -52,6 +52,11 @@ export interface LandingTranslation {
   taxBenefit1: string;
   taxBenefit2: string;
   taxBenefit3: string;
+  realEstateTitle: string;
+  realEstateDescription: string;
+  realEstateBenefit1: string;
+  realEstateBenefit2: string;
+  realEstateBenefit3: string;
   tryCalculator: string;
   
   // Testimonials Section
@@ -126,6 +131,11 @@ export const landingTranslations: Record<Language, LandingTranslation> = {
     taxBenefit1: "Compare tax implications of different investment vehicles",
     taxBenefit2: "Understand how tax-advantaged accounts can boost returns",
     taxBenefit3: "Plan withdrawals to minimize tax burden",
+    realEstateTitle: "Real Estate Investment Calculator",
+    realEstateDescription: "Discover the 3 engines of profit in real estate: cash flow, appreciation, and equity building. See your 30-year wealth projection.",
+    realEstateBenefit1: "Visualize monthly cash flow and property value growth over 30 years",
+    realEstateBenefit2: "Understand the power of leverage and the 3 profit engines",
+    realEstateBenefit3: "Compare scenarios with different down payments and financing",
     tryCalculator: "Try Calculator",
     
     // Testimonials Section
@@ -198,6 +208,11 @@ export const landingTranslations: Record<Language, LandingTranslation> = {
     taxBenefit1: "השווה השלכות מס של כלי השקעה שונים",
     taxBenefit2: "הבן כיצד חשבונות עם הטבות מס יכולים להגביר תשואות",
     taxBenefit3: "תכנן משיכות כדי למזער את נטל המס",
+    realEstateTitle: "מחשבון השקעות נדל\"ן",
+    realEstateDescription: "גלה את 3 מנועי הרווח בנדל\"ן: תזרים מזומנים, עליית ערך ובניית הון. צפה בתחזית העושר שלך ל-30 שנה.",
+    realEstateBenefit1: "צפה בתזרים מזומנים חודשי וצמיחת שווי הנכס לאורך 30 שנה",
+    realEstateBenefit2: "הבן את כוח המינוף ו-3 מנועי הרווח",
+    realEstateBenefit3: "השווה תרחישים עם הון עצמי ומימון שונים",
     tryCalculator: "נסה את המחשבון",
     
     // Testimonials Section
