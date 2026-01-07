@@ -145,7 +145,7 @@ export function RealEstateCalculatorV2() {
 									{formatCurrencySafe(
 										Math.round(
 											projection.summary.year30
-												.totalEquityBuilt
+												.netWorth
 										)
 									)}
 								</span>
