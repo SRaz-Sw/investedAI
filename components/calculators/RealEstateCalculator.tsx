@@ -723,7 +723,7 @@ export function RealEstateCalculator() {
                       label={{ value: t.years, position: 'insideBottom', offset: -5, fill: '#888', fontSize: 12 }}
                     />
                     <YAxis 
-                      tickFormatter={abbreviateNumber}
+                      tickFormatter={(value) => abbreviateNumber(value)}
                       tickLine={false}
                       axisLine={{ stroke: '#eaeaea' }}
                       tick={{ fill: '#888', fontSize: 12 }}
@@ -772,7 +772,7 @@ export function RealEstateCalculator() {
                       tick={{ fill: '#888', fontSize: 12 }}
                     />
                     <YAxis 
-                      tickFormatter={abbreviateNumber}
+                      tickFormatter={(value) => abbreviateNumber(value)}
                       tickLine={false}
                       axisLine={{ stroke: '#eaeaea' }}
                       tick={{ fill: '#888', fontSize: 12 }}
