@@ -130,6 +130,7 @@ export interface ProjectionData {
     year1: Year1Results;
     year15: ChartDataPoint;
     year30: ChartDataPoint;
+    averageAnnualROI: number;
   };
 }
 

@@ -149,15 +149,32 @@ export function RealEstateCalculatorV2() {
 										)
 									)}
 								</span>
-								. {t.storylineROI}{' '}
-								<span className="font-bold text-2xl text-emerald-600 dark:text-emerald-400">
-									{projection.summary.year1.withLeverage.roi.toFixed(
-										1
-									)}
-									%
-								</span>{' '}
-								{t.roi}!
+								.
 							</p>
+							<div className="flex flex-wrap justify-center gap-4 mt-3 pt-3 border-t border-emerald-200/40 dark:border-emerald-700/40">
+								<div className="text-center">
+									<span className="text-sm text-gray-500 dark:text-gray-400">
+										{t.storylineYear1ROI}
+									</span>{' '}
+									<span className="font-bold text-lg text-emerald-600 dark:text-emerald-400">
+										{projection.summary.year1.withLeverage.roi.toFixed(
+											1
+										)}
+										%
+									</span>
+								</div>
+								<div className="text-center">
+									<span className="text-sm text-gray-500 dark:text-gray-400">
+										{t.storylineAverageROI}
+									</span>{' '}
+									<span className="font-bold text-xl text-emerald-600 dark:text-emerald-400">
+										{projection.summary.averageAnnualROI.toFixed(
+											1
+										)}
+										%
+									</span>
+								</div>
+							</div>
 						</CardContent>
 					</Card>
 
@@ -178,10 +195,12 @@ export function RealEstateCalculatorV2() {
 						<CardContent className="p-4 md:p-6">
 							<div className="mb-4">
 								<h3 className="text-lg font-semibold bg-gradient-to-r from-zinc-800 to-zinc-600 dark:from-zinc-200 dark:to-zinc-400 bg-clip-text text-transparent">
+									{inputs.mortgageTermYears}-{t.year}{' '}
 									{t.chartTitle}
 								</h3>
 								<p className="text-sm text-gray-500 dark:text-gray-400">
-									{t.chartSubtitle}
+									{t.chartSubtitle}{' '}
+									{inputs.mortgageTermYears} {t.years}
 								</p>
 							</div>
 							<ProjectionChart

@@ -94,6 +94,8 @@ export interface RealEstateV2Translation {
 	storylineWorth: string;
 	storylineTotalReturn: string;
 	storylineROI: string;
+	storylineYear1ROI: string;
+	storylineAverageROI: string;
 
 	// Monthly Breakdown
 	monthlyBreakdown: string;
@@ -195,8 +197,8 @@ export const realEstateV2Translations: Record<
 		roi: 'ROI',
 
 		// Chart
-		chartTitle: '30-Year Property Projection',
-		chartSubtitle: 'Watch your wealth grow over time',
+		chartTitle: 'Property Projection',
+		chartSubtitle: 'Watch your wealth grow over',
 		propertyValue: 'Property Value',
 		equity: 'Equity',
 		mortgageBalance: 'Mortgage Balance',
@@ -218,6 +220,8 @@ export const realEstateV2Translations: Record<
 		storylineWorth: 'your property will be worth',
 		storylineTotalReturn: 'with a total return of',
 		storylineROI: "That's a",
+		storylineYear1ROI: 'Year 1 ROI:',
+		storylineAverageROI: 'Average Annual ROI:',
 
 		// Monthly Breakdown
 		monthlyBreakdown: 'Monthly Breakdown (Year 1)',
@@ -308,8 +312,8 @@ export const realEstateV2Translations: Record<
 		roi: 'תשואה על ההשקעה',
 
 		// Chart
-		chartTitle: 'תחזית 30 שנה',
-		chartSubtitle: 'צפה בעושר שלך גדל לאורך זמן',
+		chartTitle: 'תחזית הנכס',
+		chartSubtitle: 'צפה בעושר שלך גדל לאורך',
 		propertyValue: 'שווי נכס',
 		equity: 'הון עצמי',
 		mortgageBalance: 'יתרת משכנתא',
@@ -331,6 +335,8 @@ export const realEstateV2Translations: Record<
 		storylineWorth: 'הנכס שלך יהיה שווה',
 		storylineTotalReturn: 'עם תשואה כוללת של',
 		storylineROI: 'זו תשואה של',
+		storylineYear1ROI: 'תשואה שנה 1:',
+		storylineAverageROI: 'תשואה שנתית ממוצעת:',
 
 		// Monthly Breakdown
 		monthlyBreakdown: 'פירוט חודשי (שנה 1)',

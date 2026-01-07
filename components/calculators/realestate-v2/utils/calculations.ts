@@ -425,6 +425,16 @@ export function generateProjectionData(
 	// === CALCULATE YEAR 1 RESULTS ===
 	const year1 = calculateYear1Results(inputs, derived);
 
+	// === CALCULATE AVERAGE ANNUAL ROI ===
+	// Average ROI = (Final Net Worth - Initial Investment) / Initial Investment / Years * 100
+	const finalData = chartData[TOTAL_MONTHS];
+	const totalReturnOverPeriod = finalData.netWorth - downPayment;
+	const averageAnnualROI =
+		downPayment > 0
+			? (totalReturnOverPeriod / downPayment / mortgageTermYears) *
+			  100
+			: 0;
+
 	// === EXTRACT SUMMARY POINTS ===
 	return {
 		chartData,
@@ -432,6 +442,7 @@ export function generateProjectionData(
 			year1,
 			year15: chartData[Math.min(180, TOTAL_MONTHS)],
 			year30: chartData[TOTAL_MONTHS],
+			averageAnnualROI,
 		},
 	};
 }
