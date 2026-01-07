@@ -112,6 +112,7 @@ export interface ChartDataPoint {
   mortgageBalance: number;        // Remaining loan balance
   equity: number;                 // propertyValue - mortgageBalance
   equityPercent: number;          // (equity / propertyValue) * 100
+  netWorth: number;               // propertyValue - mortgageBalance + cumulativeCashFlow
   
   // For tooltips
   monthlyCashFlow: number;        // Net cash flow this month

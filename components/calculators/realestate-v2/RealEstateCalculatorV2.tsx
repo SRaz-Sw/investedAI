@@ -195,14 +195,6 @@ export function RealEstateCalculatorV2() {
 						</CardContent>
 					</Card>
 
-					{/* ===== RESULTS PANEL ===== */}
-					<ResultsPanel
-						year1={projection.summary.year1}
-						derived={derived}
-						translations={t}
-						formatCurrency={formatCurrencySafe}
-					/>
-
 					{/* ===== DERIVED VALUES SUMMARY ===== */}
 					<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 						<Card className="bg-gradient-to-br from-white/70 to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md border border-white/50 dark:border-zinc-700/30">
@@ -258,6 +250,13 @@ export function RealEstateCalculatorV2() {
 							</CardContent>
 						</Card>
 					</div>
+					{/* ===== RESULTS PANEL ===== */}
+					<ResultsPanel
+						year1={projection.summary.year1}
+						derived={derived}
+						translations={t}
+						formatCurrency={formatCurrencySafe}
+					/>
 				</CardContent>
 			</Card>
 

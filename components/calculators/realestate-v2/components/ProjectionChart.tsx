@@ -2,15 +2,17 @@
  * Real Estate Calculator V2 - Projection Chart Component
  * 
  * Displays a 30-year property projection with dual Y-axis:
- * - Left axis: Property values (property value, equity, mortgage balance)
+ * - Left axis: Property values (property value, equity, mortgage balance, net worth)
  * - Right axis: Monthly rent
  * 
- * Performance optimized with memoization and disabled animations.
+ * Features:
+ * - Click legend items to toggle line visibility
+ * - Performance optimized with memoization and disabled animations
  */
 
 'use client';
 
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useState, useCallback } from 'react';
 import {
   ComposedChart,
   Line,
@@ -38,9 +40,13 @@ const COLORS = {
   equity: '#f59e0b',
   mortgageBalance: '#f87171',
   monthlyRent: '#3b82f6',
+  netWorth: '#8b5cf6',
   grid: '#e5e7eb',
   text: '#6b7280',
 };
+
+// Data keys that can be toggled
+type ToggleableKey = 'propertyValue' | 'equity' | 'mortgageBalance' | 'monthlyRent' | 'netWorth';
 
 export const ProjectionChart = memo(function ProjectionChart({ 
   data, 
@@ -48,6 +54,21 @@ export const ProjectionChart = memo(function ProjectionChart({
   language,
   translations: t,
 }: ProjectionChartProps) {
+  // Track which lines are hidden (toggled off via legend)
+  const [hiddenLines, setHiddenLines] = useState<Set<ToggleableKey>>(new Set());
+  
+  // Toggle line visibility when legend item is clicked
+  const handleLegendClick = useCallback((dataKey: string) => {
+    setHiddenLines(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(dataKey as ToggleableKey)) {
+        newSet.delete(dataKey as ToggleableKey);
+      } else {
+        newSet.add(dataKey as ToggleableKey);
+      }
+      return newSet;
+    });
+  }, []);
   
   const formatYAxisRight = (value: number) => `$${value.toLocaleString()}`;
   
@@ -59,6 +80,9 @@ export const ProjectionChart = memo(function ProjectionChart({
     }
     return '';
   };
+  
+  // Check if a line is visible
+  const isVisible = (key: ToggleableKey) => !hiddenLines.has(key);
   
   const CustomTooltip = useMemo(() => {
     return function Tooltip({ active, payload }: any) {
@@ -161,7 +185,32 @@ export const ProjectionChart = memo(function ProjectionChart({
           
           <Tooltip content={<CustomTooltip />} />
           
-          <Legend verticalAlign="top" height={36} iconType="circle" iconSize={8} />
+          <Legend 
+            verticalAlign="top" 
+            height={36} 
+            iconType="circle" 
+            iconSize={8}
+            onClick={(e) => {
+              if (e.dataKey) {
+                handleLegendClick(e.dataKey as string);
+              }
+            }}
+            formatter={(value, entry) => {
+              const dataKey = entry.dataKey as ToggleableKey;
+              const isHidden = hiddenLines.has(dataKey);
+              return (
+                <span 
+                  style={{ 
+                    color: isHidden ? '#9ca3af' : entry.color,
+                    textDecoration: isHidden ? 'line-through' : 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {value}
+                </span>
+              );
+            }}
+          />
           
           {/* Mortgage end reference line */}
           <ReferenceLine
@@ -183,6 +232,7 @@ export const ProjectionChart = memo(function ProjectionChart({
             strokeWidth={3}
             dot={false}
             isAnimationActive={false}
+            hide={!isVisible('propertyValue')}
           />
           
           {/* Equity - filled area */}
@@ -193,10 +243,24 @@ export const ProjectionChart = memo(function ProjectionChart({
             name={t.equity}
             stroke={COLORS.equity}
             fill={COLORS.equity}
-            fillOpacity={0.15}
+            fillOpacity={isVisible('equity') ? 0.15 : 0}
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}
+            hide={!isVisible('equity')}
+          />
+          
+          {/* Net Worth - purple line */}
+          <Line
+            yAxisId="left"
+            type="monotone"
+            dataKey="netWorth"
+            name={t.netWorth}
+            stroke={COLORS.netWorth}
+            strokeWidth={3}
+            dot={false}
+            isAnimationActive={false}
+            hide={!isVisible('netWorth')}
           />
           
           {/* Mortgage Balance - dashed */}
@@ -210,6 +274,7 @@ export const ProjectionChart = memo(function ProjectionChart({
             strokeDasharray="5 5"
             dot={false}
             isAnimationActive={false}
+            hide={!isVisible('mortgageBalance')}
           />
           
           {/* Monthly Rent */}
@@ -222,6 +287,7 @@ export const ProjectionChart = memo(function ProjectionChart({
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}
+            hide={!isVisible('monthlyRent')}
           />
         </ComposedChart>
       </ResponsiveContainer>
