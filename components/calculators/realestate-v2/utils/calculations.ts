@@ -301,7 +301,7 @@ export function generateProjectionData(inputs: RealEstateInputs): ProjectionData
   // === PRE-CALCULATE CONSTANTS (avoid repeated calculations in loop) ===
   const TOTAL_MONTHS = mortgageTermYears * 12;
   const monthlyAppreciationFactor = Math.pow(1 + appreciationRate / 100, 1 / 12);
-  const monthlyRentGrowthFactor = Math.pow(1 + rentGrowthRate / 100, 1 / 12);
+  const yearlyRentGrowthFactor = 1 + rentGrowthRate / 100; // Rent increases once per year
   const monthlyInterestRate = mortgageRate / 100 / 12;
   const vacancyFactor = vacancyRate / 100;
   const managementFactor = propertyManagementPercent / 100;
@@ -328,10 +328,14 @@ export function generateProjectionData(inputs: RealEstateInputs): ProjectionData
       mortgageBalance = Math.max(0, mortgageBalance - principalPayment);
     }
     
-    // === GROWTH (incremental multiplication) ===
+    // === GROWTH ===
     if (month > 0) {
-      currentRent *= monthlyRentGrowthFactor;
+      // Property appreciates monthly (compounded)
       currentValue *= monthlyAppreciationFactor;
+      // Rent increases once per year (at the start of each new year)
+      if (month % 12 === 0) {
+        currentRent *= yearlyRentGrowthFactor;
+      }
     }
     
     // === EQUITY CALCULATION ===
