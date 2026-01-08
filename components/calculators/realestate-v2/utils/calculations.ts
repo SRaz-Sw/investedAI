@@ -185,8 +185,13 @@ export function calculateYear1Results(
 ): Year1Results {
 	const { monthlyRent, appreciationRate, mortgageRate } = inputs;
 
-	const { marketValue, loanAmount, monthlyMortgage, totalCashRequired } =
-		derived;
+	const {
+		marketValue,
+		instantEquity,
+		loanAmount,
+		monthlyMortgage,
+		totalCashRequired,
+	} = derived;
 
 	// Calculate monthly expenses at year 1
 	const monthlyExpenses = calculateMonthlyExpenses(
@@ -201,8 +206,13 @@ export function calculateYear1Results(
 	const noLeverageAppreciation = marketValue * (appreciationRate / 100);
 	const noLeverageTotalReturn =
 		noLeverageAnnualCashFlow + noLeverageAppreciation;
+	// No leverage investment = actual purchase price + closing costs
+	const actualPurchasePrice = marketValue - instantEquity;
+	const noLeverageInvestment = actualPurchasePrice + inputs.closingCosts;
 	const noLeverageROI =
-		marketValue > 0 ? (noLeverageTotalReturn / marketValue) * 100 : 0;
+		noLeverageInvestment > 0
+			? (noLeverageTotalReturn / noLeverageInvestment) * 100
+			: 0;
 
 	// === WITH LEVERAGE SCENARIO ===
 	const withLeverageNetMonthly =

@@ -40,6 +40,7 @@ export function useCalculations(
 			inputs.purchasePrice,
 			inputs.belowMarketPercent,
 			inputs.downPaymentPercent,
+			inputs.closingCosts,
 			inputs.mortgageRate,
 			inputs.mortgageTermYears,
 		]
@@ -56,6 +57,7 @@ export function useCalculations(
 			inputs.appreciationRate,
 			inputs.rentGrowthRate,
 			inputs.downPaymentPercent,
+			inputs.closingCosts,
 			inputs.mortgageRate,
 			inputs.mortgageTermYears,
 			inputs.vacancyRate,
