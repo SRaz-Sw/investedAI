@@ -57,6 +57,14 @@ export function getSliderConfigs(t: RealEstateV2Translation): SliderConfigs {
       step: 5,
       suffix: '%',
     },
+    closingCosts: {
+      label: t.closingCosts,
+      helpText: t.closingCosts_help,
+      min: 0,
+      max: 25000,
+      step: 500,
+      prefix: '$',
+    },
     vacancyRate: {
       label: t.vacancyRate,
       helpText: t.vacancyRate_help,

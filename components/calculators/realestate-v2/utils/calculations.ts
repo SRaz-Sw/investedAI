@@ -109,6 +109,7 @@ export function calculateDerivedValues(
 		purchasePrice: marketValue, // User enters market value
 		belowMarketPercent,
 		downPaymentPercent,
+		closingCosts,
 		mortgageRate,
 		mortgageTermYears,
 	} = inputs;
@@ -130,12 +131,16 @@ export function calculateDerivedValues(
 		mortgageTermYears
 	);
 
+	// Total cash required = down payment + closing costs
+	const totalCashRequired = downPayment + closingCosts;
+
 	return {
 		marketValue,
 		instantEquity,
 		downPayment,
 		loanAmount,
 		monthlyMortgage,
+		totalCashRequired,
 	};
 }
 
@@ -180,7 +185,7 @@ export function calculateYear1Results(
 ): Year1Results {
 	const { monthlyRent, appreciationRate, mortgageRate } = inputs;
 
-	const { marketValue, downPayment, loanAmount, monthlyMortgage } =
+	const { marketValue, loanAmount, monthlyMortgage, totalCashRequired } =
 		derived;
 
 	// Calculate monthly expenses at year 1
@@ -227,8 +232,8 @@ export function calculateYear1Results(
 		year1PrincipalPaydown;
 
 	const withLeverageROI =
-		downPayment > 0
-			? (withLeverageTotalReturn / downPayment) * 100
+		totalCashRequired > 0
+			? (withLeverageTotalReturn / totalCashRequired) * 100
 			: 0;
 
 	// === THREE ENGINES BREAKDOWN ===
@@ -321,6 +326,7 @@ export function generateProjectionData(
 		downPayment,
 		loanAmount,
 		monthlyMortgage,
+		totalCashRequired,
 	} = derived;
 
 	// === PRE-CALCULATE CONSTANTS (avoid repeated calculations in loop) ===
@@ -342,7 +348,8 @@ export function generateProjectionData(
 	let currentRent = initialRent;
 	let currentValue = initialMarketValue;
 	let mortgageBalance = loanAmount;
-	let cumulativeCashFlow = 0;
+	// Closing costs are a one-time expense at purchase, reducing overall returns
+	let cumulativeCashFlow = -inputs.closingCosts;
 
 	// === MAIN CALCULATION LOOP ===
 	for (let month = 0; month <= TOTAL_MONTHS; month++) {
@@ -427,11 +434,14 @@ export function generateProjectionData(
 
 	// === CALCULATE AVERAGE ANNUAL ROI ===
 	// Average ROI = (Final Net Worth - Initial Investment) / Initial Investment / Years * 100
+	// Initial Investment = totalCashRequired (downPayment + closingCosts)
 	const finalData = chartData[TOTAL_MONTHS];
-	const totalReturnOverPeriod = finalData.netWorth - downPayment;
+	const totalReturnOverPeriod = finalData.netWorth - totalCashRequired;
 	const averageAnnualROI =
-		downPayment > 0
-			? (totalReturnOverPeriod / downPayment / mortgageTermYears) *
+		totalCashRequired > 0
+			? (totalReturnOverPeriod /
+					totalCashRequired /
+					mortgageTermYears) *
 			  100
 			: 0;
 

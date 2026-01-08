@@ -19,6 +19,7 @@ export interface RealEstateV2Translation {
 	appreciation: string;
 	rentGrowth: string;
 	downPayment: string;
+	closingCosts: string;
 
 	// Input labels - Advanced
 	advancedSettings: string;
@@ -36,6 +37,7 @@ export interface RealEstateV2Translation {
 	appreciation_help: string;
 	rentGrowth_help: string;
 	downPayment_help: string;
+	closingCosts_help: string;
 	vacancyRate_help: string;
 	insuranceTax_help: string;
 	propertyManagement_help: string;
@@ -48,6 +50,7 @@ export interface RealEstateV2Translation {
 	instantEquity: string;
 	loanAmount: string;
 	monthlyMortgagePayment: string;
+	totalCashRequired: string;
 
 	// Three Engines
 	threeEngines: string;
@@ -136,6 +139,7 @@ export const realEstateV2Translations: Record<
 		appreciation: 'Annual Appreciation',
 		rentGrowth: 'Rent Growth Rate',
 		downPayment: 'Down Payment',
+		closingCosts: 'Closing Costs',
 
 		// Input labels - Advanced
 		advancedSettings: 'Advanced Settings',
@@ -158,6 +162,8 @@ export const realEstateV2Translations: Record<
 			'Rent typically increases 3% annually with inflation',
 		downPayment_help:
 			'Your initial cash investment. 25% = 75% leverage',
+		closingCosts_help:
+			'One-time costs to complete the purchase: title insurance, attorney fees, inspections, etc.',
 		vacancyRate_help:
 			'Percentage of time the property sits empty between tenants',
 		insuranceTax_help:
@@ -174,6 +180,7 @@ export const realEstateV2Translations: Record<
 		instantEquity: 'Instant Equity',
 		loanAmount: 'Loan Amount',
 		monthlyMortgagePayment: 'Monthly Mortgage',
+		totalCashRequired: 'Total Cash to Close',
 
 		// Three Engines
 		threeEngines: 'The 3 Engines of Profit',
@@ -258,6 +265,7 @@ export const realEstateV2Translations: Record<
 		appreciation: 'עליית ערך שנתית',
 		rentGrowth: 'עליית שכירות',
 		downPayment: 'הון עצמי',
+		closingCosts: 'עלויות סגירה',
 
 		// Input labels - Advanced
 		advancedSettings: 'הגדרות מתקדמות',
@@ -277,6 +285,8 @@ export const realEstateV2Translations: Record<
 		appreciation_help: 'הממוצע ההיסטורי באינדיאנפוליס הוא ~4% בשנה',
 		rentGrowth_help: 'השכירות בדרך כלל עולה 3% בשנה עם האינפלציה',
 		downPayment_help: 'ההשקעה הראשונית שלך במזומן. 25% = מינוף של 75%',
+		closingCosts_help:
+			'עלויות חד פעמיות להשלמת הרכישה: ביטוח טייטל, עורך דין, בדיקות וכו׳',
 		vacancyRate_help: 'אחוז הזמן שהנכס עומד ריק בין דיירים',
 		insuranceTax_help: 'עלות חודשית לביטוח נכס ומיסי נכס',
 		propertyManagement_help: 'עמלה שגובה חברת ניהול (% מהשכירות)',
@@ -289,6 +299,7 @@ export const realEstateV2Translations: Record<
 		instantEquity: 'הון מיידי',
 		loanAmount: 'סכום הלוואה',
 		monthlyMortgagePayment: 'משכנתא חודשית',
+		totalCashRequired: 'סה״כ מזומן לסגירה',
 
 		// Three Engines
 		threeEngines: '3 מנועי הרווח',

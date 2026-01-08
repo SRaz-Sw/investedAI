@@ -21,6 +21,7 @@ export interface RealEstateInputs {
   
   // Financing
   downPaymentPercent: number;     // 0-100
+  closingCosts: number;           // One-time closing costs (e.g., 8000)
   mortgageRate: number;           // Annual interest rate (e.g., 7.5%)
   mortgageTermYears: number;      // e.g., 30
   
@@ -41,6 +42,7 @@ export interface DerivedValues {
   downPayment: number;            // purchasePrice * downPaymentPercent
   loanAmount: number;             // purchasePrice - downPayment
   monthlyMortgage: number;        // Calculated P&I payment
+  totalCashRequired: number;      // downPayment + closingCosts (total cash to close)
 }
 
 // ============================================================================
@@ -162,6 +164,7 @@ export const URL_KEYS: Record<keyof RealEstateInputs, string> = {
   appreciationRate: 'ar',
   rentGrowthRate: 'rg',
   downPaymentPercent: 'dp',
+  closingCosts: 'cc',
   vacancyRate: 'vr',
   insuranceTaxMonthly: 'it',
   propertyManagementPercent: 'pm',
@@ -181,6 +184,7 @@ export const DEFAULT_INPUTS: RealEstateInputs = {
   appreciationRate: 4,
   rentGrowthRate: 3,
   downPaymentPercent: 25,
+  closingCosts: 8000,
   vacancyRate: 8,
   insuranceTaxMonthly: 200,
   propertyManagementPercent: 0,

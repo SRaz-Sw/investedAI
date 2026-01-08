@@ -132,7 +132,7 @@ export function RealEstateCalculatorV2() {
 								{t.storylineIntro}{' '}
 								<span className="font-bold text-emerald-600 dark:text-emerald-400">
 									{formatCurrencySafe(
-										derived.downPayment
+										derived.totalCashRequired
 									)}
 								</span>{' '}
 								{t.storylineInvest}, {t.storylineAfter}{' '}
@@ -215,7 +215,7 @@ export function RealEstateCalculatorV2() {
 					</Card>
 
 					{/* ===== DERIVED VALUES SUMMARY ===== */}
-					<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
 						<Card className="bg-gradient-to-br from-white/70 to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md border border-white/50 dark:border-zinc-700/30">
 							<CardContent className="p-4">
 								<p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
@@ -229,12 +229,27 @@ export function RealEstateCalculatorV2() {
 							</CardContent>
 						</Card>
 
+						<Card className="bg-gradient-to-br from-emerald-50/70 to-emerald-100/50 dark:from-emerald-900/30 dark:to-emerald-800/20 backdrop-blur-md border border-emerald-200/50 dark:border-emerald-700/30">
+							<CardContent className="p-4">
+								<p className="text-xs text-emerald-700 dark:text-emerald-300 mb-1">
+									{t.totalCashRequired}
+								</p>
+								<p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+									{formatCurrencySafe(
+										Math.round(
+											derived.totalCashRequired
+										)
+									)}
+								</p>
+							</CardContent>
+						</Card>
+
 						<Card className="bg-gradient-to-br from-white/70 to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md border border-white/50 dark:border-zinc-700/30">
 							<CardContent className="p-4">
 								<p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
 									{t.instantEquity}
 								</p>
-								<p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+								<p className="text-lg font-bold text-sky-600 dark:text-sky-400">
 									{formatCurrencySafe(
 										Math.round(derived.instantEquity)
 									)}
