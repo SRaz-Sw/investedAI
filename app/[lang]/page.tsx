@@ -431,7 +431,7 @@ export default function Home({
 								t.realEstateBenefit2,
 								t.realEstateBenefit3,
 							]}
-							link="/realestate2"
+							link="/real-estate-pro"
 							buttonText={t.tryCalculator}
 							index={3}
 							lang={lang}

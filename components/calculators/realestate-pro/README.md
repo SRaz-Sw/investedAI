@@ -37,7 +37,7 @@ components/calculators/realestate-pro/
 lib/translations/
 └── realestatePro.ts                 # Translations (EN/HE)
 
-app/[lang]/realestate2/
+app/[lang]/real-estate-pro/
 └── page.tsx                         # Next.js page route
 ```
 
@@ -46,8 +46,8 @@ app/[lang]/realestate2/
 ### Accessing the Calculator
 
 Navigate to:
-- English: `/en/realestate2`
-- Hebrew: `/he/realestate2`
+- English: `/en/real-estate-pro`
+- Hebrew: `/he/real-estate-pro`
 
 ### Sharing Calculations
 
@@ -55,7 +55,7 @@ Click the "Share Calculation" button to copy a URL with all current inputs encod
 
 Example URL:
 ```
-/en/realestate2?pp=85000&mr=1100&ar=4&rg=3&dp=25&vr=8&it=200&mi=7.5&my=30
+/en/real-estate-pro?pp=85000&mr=1100&ar=4&rg=3&dp=25&vr=8&it=200&mi=7.5&my=30
 ```
 
 ## 🔧 Technical Details

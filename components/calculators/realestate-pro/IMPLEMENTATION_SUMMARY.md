@@ -29,7 +29,7 @@ All components have been successfully created following the implementation plan 
 - ✅ `lib/translations/realestatePro.ts` - English & Hebrew translations
 
 #### Routes
-- ✅ `app/[lang]/realestate2/page.tsx` - Next.js page route
+- ✅ `app/[lang]/real-estate-pro/page.tsx` - Next.js page route
 
 #### Documentation
 - ✅ `README.md` - Comprehensive documentation
@@ -97,8 +97,8 @@ User Input → State Update → Debounced → Calculations → Memoized Results 
 ## 🧪 Testing Checklist
 
 ### Functional Testing
-- [ ] Navigate to `/en/realestate2` - page loads
-- [ ] Navigate to `/he/realestate2` - Hebrew version works
+- [ ] Navigate to `/en/real-estate-pro` - page loads
+- [ ] Navigate to `/he/real-estate-pro` - Hebrew version works
 - [ ] Adjust sliders - calculations update instantly
 - [ ] Open advanced settings - additional inputs appear
 - [ ] Click help buttons - drawer opens with descriptions
@@ -194,8 +194,8 @@ npm run build
 ```
 
 ### Routes Available
-- `/en/realestate2` - English version
-- `/he/realestate2` - Hebrew version
+- `/en/real-estate-pro` - English version
+- `/he/real-estate-pro` - Hebrew version
 
 ### URL Parameters
 All inputs can be shared via URL with short keys:
@@ -237,7 +237,7 @@ All inputs can be shared via URL with short keys:
 
 The calculator is complete and ready to use. To get started:
 
-1. Navigate to `/en/realestate2` or `/he/realestate2`
+1. Navigate to `/en/real-estate-pro` or `/he/real-estate-pro`
 2. Adjust the sliders to see real-time calculations
 3. Open advanced settings for more options
 4. Click the share button to copy a shareable URL

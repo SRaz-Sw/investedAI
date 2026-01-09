@@ -47,8 +47,8 @@
 3. Calculator loads instantly
 
 ### Via Direct URL
-- English: `/en/realestate2`
-- Hebrew: `/he/realestate2`
+- English: `/en/real-estate-pro`
+- Hebrew: `/he/real-estate-pro`
 
 ### Via Landing Page
 - Scroll to "Our Financial Calculators" section

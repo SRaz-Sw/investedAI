@@ -1,7 +1,7 @@
 /**
  * Real Estate Calculator Pro - Page Component
  *
- * Route: /[lang]/realestate2
+ * Route: /[lang]/real-estate-pro
  */
 
 'use client';

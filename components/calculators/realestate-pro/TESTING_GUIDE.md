@@ -12,8 +12,8 @@ The Real Estate Calculator Pro is now live and accessible from the landing page!
    - Click "Try Calculator" on the "Real Estate Investment Calculator" card
 
 2. **Direct URLs**:
-   - English: `/en/realestate2`
-   - Hebrew: `/he/realestate2`
+   - English: `/en/real-estate-pro`
+   - Hebrew: `/he/real-estate-pro`
 
 ## ✅ Testing Checklist
 
@@ -56,7 +56,7 @@ The Real Estate Calculator Pro is now live and accessible from the landing page!
 - [ ] URL contains short parameter keys (pp, mr, ar, etc.)
 
 ### Bilingual Support
-- [ ] Switch to Hebrew (`/he/realestate2`)
+- [ ] Switch to Hebrew (`/he/real-estate-pro`)
 - [ ] All text displays in Hebrew
 - [ ] Layout is RTL (right-to-left)
 - [ ] Numbers and currency format correctly
