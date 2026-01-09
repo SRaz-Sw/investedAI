@@ -455,6 +455,20 @@ export function generateProjectionData(
 			  100
 			: 0;
 
+	// === CALCULATE COMPOUND ANNUAL ROI (CAGR) ===
+	// CAGR = ((Final Value / Initial Value)^(1/years) - 1) * 100
+	// This is comparable to stock market returns (e.g., "S&P 500 returns 10% annually")
+	// Cash flows accumulate in a simple account (no compounding) - already tracked in cumulativeCashFlow
+	const compoundAnnualROI =
+		totalCashRequired > 0 && finalData.netWorth > 0
+			? (Math.pow(
+					finalData.netWorth / totalCashRequired,
+					1 / mortgageTermYears
+			  ) -
+					1) *
+			  100
+			: 0;
+
 	// === EXTRACT SUMMARY POINTS ===
 	return {
 		chartData,
@@ -463,6 +477,7 @@ export function generateProjectionData(
 			year15: chartData[Math.min(180, TOTAL_MONTHS)],
 			year30: chartData[TOTAL_MONTHS],
 			averageAnnualROI,
+			compoundAnnualROI,
 		},
 	};
 }

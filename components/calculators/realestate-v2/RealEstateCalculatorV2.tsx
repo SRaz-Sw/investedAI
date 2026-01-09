@@ -167,8 +167,19 @@ export function RealEstateCalculatorV2() {
 									<span className="text-sm text-gray-500 dark:text-gray-400">
 										{t.storylineAverageROI}
 									</span>{' '}
-									<span className="font-bold text-xl text-emerald-600 dark:text-emerald-400">
+									<span className="font-bold text-lg text-sky-600 dark:text-sky-400">
 										{projection.summary.averageAnnualROI.toFixed(
+											1
+										)}
+										%
+									</span>
+								</div>
+								<div className="text-center">
+									<span className="text-sm text-gray-500 dark:text-gray-400">
+										{t.storylineCompoundROI}
+									</span>{' '}
+									<span className="font-bold text-xl text-violet-600 dark:text-violet-400">
+										{projection.summary.compoundAnnualROI.toFixed(
 											1
 										)}
 										%

@@ -99,6 +99,7 @@ export interface RealEstateV2Translation {
 	storylineROI: string;
 	storylineYear1ROI: string;
 	storylineAverageROI: string;
+	storylineCompoundROI: string;
 
 	// Monthly Breakdown
 	monthlyBreakdown: string;
@@ -229,6 +230,7 @@ export const realEstateV2Translations: Record<
 		storylineROI: "That's a",
 		storylineYear1ROI: 'Year 1 ROI:',
 		storylineAverageROI: 'Average Annual ROI:',
+		storylineCompoundROI: 'Compound Annual ROI:',
 
 		// Monthly Breakdown
 		monthlyBreakdown: 'Monthly Breakdown (Year 1)',
@@ -348,6 +350,7 @@ export const realEstateV2Translations: Record<
 		storylineROI: 'זו תשואה של',
 		storylineYear1ROI: 'תשואה שנה 1:',
 		storylineAverageROI: 'תשואה שנתית ממוצעת:',
+		storylineCompoundROI: 'תשואה שנתית מצטברת:',
 
 		// Monthly Breakdown
 		monthlyBreakdown: 'פירוט חודשי (שנה 1)',
