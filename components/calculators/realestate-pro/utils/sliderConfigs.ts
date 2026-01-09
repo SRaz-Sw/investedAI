@@ -5,10 +5,10 @@
  */
 
 import type { SliderConfigs } from '../types';
-import type { RealEstateV2Translation } from '@/lib/translations/realestateV2';
+import type { RealEstateProTranslation } from '@/lib/translations/realestatePro';
 
 export function getSliderConfigs(
-	t: RealEstateV2Translation
+	t: RealEstateProTranslation
 ): SliderConfigs {
 	return {
 		purchasePrice: {

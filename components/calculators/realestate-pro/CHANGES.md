@@ -1,21 +1,21 @@
-# Real Estate Calculator V2 - Recent Changes
+# Real Estate Calculator Pro - Recent Changes
 
 ## ✅ Changes Made
 
 ### 1. Added to Navigation Bar
 - **File**: `components/layout/header.tsx`
-- **Change**: Added "Real Estate V2" to the navigation menu
-- Both desktop and mobile navigation now include the new calculator
+- **Change**: Added "Real Estate Pro" to the navigation menu
+- Both desktop and mobile navigation now include the professional calculator
 - Appears alongside the original Real Estate calculator
 
 ### 2. Added Translations
 - **File**: `lib/translations/common.ts`
-- **Added**: `realestateV2` translation key
-- **English**: "Real Estate V2"
-- **Hebrew**: "נדל\"ן V2"
+- **Added**: `realestatePro` translation key
+- **English**: "Real Estate Pro"
+- **Hebrew**: "נדל\"ן Pro"
 
 ### 3. Moved Chart Position
-- **File**: `components/calculators/realestate-v2/RealEstateCalculatorV2.tsx`
+- **File**: `components/calculators/realestate-pro/RealEstateCalculatorPro.tsx`
 - **Change**: Moved the 30-year projection chart to appear **immediately after the input sliders**
 - **Reason**: Users can now see the direct effect of slider changes on the chart in real-time
 - **New Order**:
@@ -43,7 +43,7 @@
 
 ### Via Navigation Bar
 1. Look at the top navigation bar
-2. Click on "Real Estate V2" (or "נדל\"ן V2" in Hebrew)
+2. Click on "Real Estate Pro" (or "נדל\"ן Pro" in Hebrew)
 3. Calculator loads instantly
 
 ### Via Direct URL
@@ -110,7 +110,7 @@ To verify the changes:
 
 ## 📝 Notes
 
-- Both Real Estate calculators are now in the navbar (original and V2)
+- Both Real Estate calculators are now in the navbar (original and Pro)
 - Chart position change improves the feedback loop
 - No breaking changes to existing functionality
 - All calculations remain accurate

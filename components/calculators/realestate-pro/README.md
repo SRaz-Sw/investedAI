@@ -1,6 +1,6 @@
-# Real Estate Investment Calculator V2
+# Real Estate Investment Calculator Pro
 
-A clean, maintainable implementation of a real estate investment calculator demonstrating the "3 engines of profit" concept with monthly granularity over 30 years.
+A clean, maintainable implementation of a professional real estate investment calculator demonstrating the "3 engines of profit" concept with monthly granularity over 30 years.
 
 ## 🎯 Features
 
@@ -17,7 +17,7 @@ A clean, maintainable implementation of a real estate investment calculator demo
 ## 📁 Project Structure
 
 ```
-components/calculators/realestate-v2/
+components/calculators/realestate-pro/
 ├── types.ts                          # TypeScript interfaces & constants
 ├── utils/
 │   ├── calculations.ts               # Pure calculation functions (O(n))
@@ -30,12 +30,12 @@ components/calculators/realestate-v2/
 │   ├── ResultsPanel.tsx             # Year 1 results & 3 engines
 │   ├── ProjectionChart.tsx          # 30-year dual Y-axis chart
 │   └── ShareButton.tsx              # URL sharing button
-├── RealEstateCalculatorV2.tsx       # Main container component
+├── RealEstateCalculatorPro.tsx      # Main container component
 ├── index.ts                         # Public exports
 └── README.md                        # This file
 
 lib/translations/
-└── realestateV2.ts                  # Translations (EN/HE)
+└── realestatePro.ts                 # Translations (EN/HE)
 
 app/[lang]/realestate2/
 └── page.tsx                         # Next.js page route

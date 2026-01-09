@@ -1,13 +1,13 @@
 /**
- * Real Estate Calculator V2 - Translations
+ * Real Estate Calculator Pro - Translations
  *
- * Hebrew and English translations for the new real estate calculator
+ * Hebrew and English translations for the professional real estate calculator
  * following the "3 engines of profit" concept.
  */
 
 import { Language } from './index';
 
-export interface RealEstateV2Translation {
+export interface RealEstateProTranslation {
 	// Page titles
 	title: string;
 	subtitle: string;
@@ -123,9 +123,9 @@ export interface RealEstateV2Translation {
 	close: string;
 }
 
-export const realEstateV2Translations: Record<
+export const realEstateProTranslations: Record<
 	Language,
-	RealEstateV2Translation
+	RealEstateProTranslation
 > = {
 	en: {
 		// Page titles

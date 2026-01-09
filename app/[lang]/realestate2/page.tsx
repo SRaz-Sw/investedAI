@@ -1,17 +1,17 @@
 /**
- * Real Estate Calculator V2 - Page Component
+ * Real Estate Calculator Pro - Page Component
  *
  * Route: /[lang]/realestate2
  */
 
 'use client';
 
-import { RealEstateCalculatorV2 } from '@/components/calculators/realestate-v2';
+import { RealEstateCalculatorPro } from '@/components/calculators/realestate-pro';
 import { useTranslationStore } from '@/lib/translations';
 import { useEffect } from 'react';
 import { Language } from '@/lib/translations';
 
-export default function RealEstateV2Page({
+export default function RealEstateProPage({
 	params: { lang },
 }: {
 	params: { lang: Language };
@@ -22,5 +22,5 @@ export default function RealEstateV2Page({
 		setLanguage(lang);
 	}, [lang, setLanguage]);
 
-	return <RealEstateCalculatorV2 />;
+	return <RealEstateCalculatorPro />;
 }

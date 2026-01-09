@@ -27,7 +27,7 @@ const navigation = [
   // { name: "tax", href: "/tax", icon: PieChart },
   { name: "pension", href: "/pension", icon: PiggyBank },
   { name: "realestate", href: "/realestate", icon: Building2 },
-  { name: "realestateV2", href: "/realestate2", icon: Building2 },
+  { name: "realestatePro", href: "/realestate2", icon: Building2 },
 ] as const;
 
 export function Header() {

@@ -1,8 +1,8 @@
-# Real Estate Calculator V2 - Testing Guide
+# Real Estate Calculator Pro - Testing Guide
 
 ## 🚀 Quick Start
 
-The Real Estate Calculator V2 is now live and accessible from the landing page!
+The Real Estate Calculator Pro is now live and accessible from the landing page!
 
 ### Access Points
 
