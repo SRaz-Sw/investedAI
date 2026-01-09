@@ -26,6 +26,8 @@ import { formatAxisValue } from '../utils/calculations';
 
 interface WealthChartDataPoint {
 	year: number;
+	month: number;
+	label: string;
 	cashFlow: number;
 	equity: number;
 	appreciation: number;
@@ -65,42 +67,39 @@ export const WealthChart = memo(function WealthChart({
 	loanAmount,
 	downPayment,
 }: WealthChartProps) {
-	// Transform monthly data to yearly wealth breakdown
+	// Transform data to monthly wealth breakdown
 	const wealthData = useMemo(() => {
-		const yearlyData: WealthChartDataPoint[] = [];
+		const monthlyData: WealthChartDataPoint[] = [];
 
-		// Process data at year boundaries (month % 12 === 0)
-		for (let year = 0; year <= mortgageTermYears; year++) {
-			const monthIndex = year * 12;
-			const point = data.find((d) => d.month === monthIndex);
+		// Process all monthly data points
+		for (const point of data) {
+			// Cash flow: cumulative cash flow (positive portion for wealth)
+			// Note: cumulativeCashFlow starts negative due to closing costs
+			const cashFlow = Math.max(0, point.cumulativeCashFlow);
 
-			if (point) {
-				// Cash flow: cumulative cash flow (positive portion for wealth)
-				// Note: cumulativeCashFlow starts negative due to closing costs
-				const cashFlow = Math.max(0, point.cumulativeCashFlow);
+			// Equity from principal paydown (what tenants have paid off)
+			const principalPaid = loanAmount - point.mortgageBalance;
+			const equity = Math.max(0, principalPaid);
 
-				// Equity from principal paydown (what tenants have paid off)
-				const principalPaid = loanAmount - point.mortgageBalance;
-				const equity = Math.max(0, principalPaid);
+			// Appreciation: property value growth above initial value
+			const appreciation = Math.max(
+				0,
+				point.propertyValue - initialMarketValue
+			);
 
-				// Appreciation: property value growth above initial value
-				const appreciation = Math.max(
-					0,
-					point.propertyValue - initialMarketValue
-				);
-
-				yearlyData.push({
-					year,
-					cashFlow: Math.round(cashFlow),
-					equity: Math.round(equity),
-					appreciation: Math.round(appreciation),
-					total: Math.round(cashFlow + equity + appreciation),
-				});
-			}
+			monthlyData.push({
+				year: point.year + (point.month % 12) / 12, // For x-axis positioning
+				month: point.month,
+				label: point.label,
+				cashFlow: Math.round(cashFlow),
+				equity: Math.round(equity),
+				appreciation: Math.round(appreciation),
+				total: Math.round(cashFlow + equity + appreciation),
+			});
 		}
 
-		return yearlyData;
-	}, [data, mortgageTermYears, loanAmount, initialMarketValue]);
+		return monthlyData;
+	}, [data, loanAmount, initialMarketValue]);
 
 	const CustomTooltip = useMemo(() => {
 		return function TooltipContent({ active, payload }: any) {
@@ -109,6 +108,9 @@ export const WealthChart = memo(function WealthChart({
 			const point = payload[0]?.payload as WealthChartDataPoint;
 			if (!point) return null;
 
+			const yearNum = Math.floor(point.month / 12) + 1;
+			const monthNum = (point.month % 12) + 1;
+
 			return (
 				<div
 					className="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700
@@ -116,7 +118,7 @@ export const WealthChart = memo(function WealthChart({
 					dir={language === 'he' ? 'rtl' : 'ltr'}
 				>
 					<p className="font-bold text-gray-900 dark:text-white mb-3 pb-2 border-b">
-						{t.year} {point.year}
+						{t.year} {yearNum}, {language === 'he' ? 'חודש' : 'Month'} {monthNum}
 					</p>
 
 					<div className="space-y-2">
@@ -175,10 +177,20 @@ export const WealthChart = memo(function WealthChart({
 					/>
 
 					<XAxis
-						dataKey="year"
+						dataKey="label"
 						tick={{ fill: COLORS.text, fontSize: 12 }}
 						tickLine={false}
 						axisLine={{ stroke: COLORS.grid }}
+						tickFormatter={(label: string) => {
+							// Only show labels for year boundaries
+							const year = parseInt(label.split('.')[0]);
+							const month = label.split('.')[1];
+							if ([1, 5, 10, 15, 20, 25, 30].includes(year) && month === '01') {
+								return `${year}`;
+							}
+							return '';
+						}}
+						interval={11}
 						label={{
 							value: language === 'he' ? 'שנים' : 'Years',
 							position: 'insideBottom',
