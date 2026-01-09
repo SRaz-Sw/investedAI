@@ -38,6 +38,7 @@ import { getSliderConfigs } from './utils/sliderConfigs';
 import { InputPanel } from './components/InputPanel';
 import { ResultsPanel } from './components/ResultsPanel';
 import { ProjectionChart } from './components/ProjectionChart';
+import { WealthChart } from './components/WealthChart';
 import { ShareButton } from './components/ShareButton';
 
 export function RealEstateCalculatorPro() {
@@ -302,6 +303,24 @@ export function RealEstateCalculatorPro() {
 						translations={t}
 						formatCurrency={formatCurrencySafe}
 					/>
+
+					{/* ===== WEALTH BUILDING CHART ===== */}
+					<Card className="overflow-hidden border border-white/20 dark:border-white/10 shadow-lg backdrop-blur-md bg-white/90 dark:bg-zinc-900/80 rounded-2xl">
+						<CardContent className="p-4 md:p-6">
+							<h3 className="text-lg font-semibold mb-4 bg-gradient-to-r from-zinc-800 to-zinc-600 dark:from-zinc-200 dark:to-zinc-400 bg-clip-text text-transparent">
+								{t.wealthOverTime}
+							</h3>
+							<WealthChart
+								data={projection.chartData}
+								mortgageTermYears={inputs.mortgageTermYears}
+								language={language}
+								translations={t}
+								initialMarketValue={derived.marketValue}
+								loanAmount={derived.loanAmount}
+								downPayment={derived.downPayment}
+							/>
+						</CardContent>
+					</Card>
 				</CardContent>
 			</Card>
 

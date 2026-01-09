@@ -121,6 +121,12 @@ export interface RealEstateProTranslation {
 	perYear: string;
 	years: string;
 	close: string;
+
+	// Wealth Building Chart
+	wealthOverTime: string;
+	accumulatedCashFlow: string;
+	accumulatedEquity: string;
+	accumulatedAppreciation: string;
 }
 
 export const realEstateProTranslations: Record<
@@ -252,6 +258,12 @@ export const realEstateProTranslations: Record<
 		perYear: '/yr',
 		years: 'years',
 		close: 'Close',
+
+		// Wealth Building Chart
+		wealthOverTime: 'Your Wealth Building Over Time',
+		accumulatedCashFlow: 'Cash Flow',
+		accumulatedEquity: 'Equity Built',
+		accumulatedAppreciation: 'Appreciation',
 	},
 
 	he: {
@@ -372,5 +384,11 @@ export const realEstateProTranslations: Record<
 		perYear: '/שנה',
 		years: 'שנים',
 		close: 'סגור',
+
+		// Wealth Building Chart
+		wealthOverTime: 'בניית העושר שלך לאורך זמן',
+		accumulatedCashFlow: 'תזרים מזומנים',
+		accumulatedEquity: 'הון עצמי',
+		accumulatedAppreciation: 'עליית ערך',
 	},
 };
