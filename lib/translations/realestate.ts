@@ -97,6 +97,11 @@ export interface RealEstateTranslation {
   rentGrowth_desc: string;
   operatingCosts_info: string;
   operatingCosts_desc: string;
+
+  // Excel export
+  exportToExcel: string;
+  downloading: string;
+  downloadComplete: string;
 }
 
 export const realEstateTranslations: Record<Language, RealEstateTranslation> = {
@@ -197,6 +202,11 @@ export const realEstateTranslations: Record<Language, RealEstateTranslation> = {
     rentGrowth_desc: "Expected yearly increase in rent. Typically tracks inflation at 2-3% per year.",
     operatingCosts_info: "Operating Costs",
     operatingCosts_desc: "Annual costs as percentage of property value. Includes maintenance, insurance, property taxes, and management fees. Typically 1-2%.",
+
+    // Excel export
+    exportToExcel: "Export to Excel",
+    downloading: "Downloading...",
+    downloadComplete: "Downloaded!",
   },
   he: {
     // Page titles
@@ -295,5 +305,10 @@ export const realEstateTranslations: Record<Language, RealEstateTranslation> = {
     rentGrowth_desc: "עלייה שנתית צפויה בשכירות. בדרך כלל עוקבת אחרי האינפלציה ב-2-3% בשנה.",
     operatingCosts_info: "עלויות תפעול",
     operatingCosts_desc: "עלויות שנתיות כאחוז משווי הנכס. כולל תחזוקה, ביטוח, מסי נכס ודמי ניהול. בדרך כלל 1-2%.",
+
+    // Excel export
+    exportToExcel: "ייצוא לאקסל",
+    downloading: "מוריד...",
+    downloadComplete: "הורדה הושלמה!",
   },
 };

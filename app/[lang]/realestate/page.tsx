@@ -15,3 +15,4 @@ export default function RealEstatePage({ params: { lang } }: { params: { lang: L
   return <RealEstateCalculator />;
 }
 
+

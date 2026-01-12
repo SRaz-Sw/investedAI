@@ -47,6 +47,7 @@ import { useTranslationStore } from '@/lib/translations';
 import { realEstateTranslations } from '@/lib/translations/realestate';
 import { SliderWithInput } from '@/components/ui/slider-w-input';
 import { useCurrencyFormatter } from '@/lib/hooks/useCurrencyFormatter';
+import { ExportButton } from './ExportButton';
 
 // Types
 type SliderInfoKeys =
@@ -359,14 +360,41 @@ export function RealEstateCalculator() {
         <CardContent className="space-y-6 md:space-y-8 p-4 md:p-8 relative z-10">
           
           {/* ===== HEADER ===== */}
-          <div className="text-center space-y-3 mb-6">
-            <div className="flex items-center justify-center gap-3 mb-2">
-              <Building2 className="w-8 h-8 text-sky-600 dark:text-sky-400" />
+          <div className="relative">
+            {/* Export Button - Top Right */}
+            <div className="absolute top-0 right-0 z-20">
+              <ExportButton
+                inputs={{
+                  propertyValue,
+                  belowMarketPercent: 0,  // Basic calculator doesn't have this
+                  downPaymentPercent,
+                  closingCosts: 0,        // Basic calculator doesn't have this
+                  monthlyRent,
+                  appreciation,
+                  mortgageRate,
+                  mortgageTerm,
+                  rentGrowth,
+                  operatingCostsPercent,
+                }}
+                translations={{
+                  exportToExcel: t.exportToExcel,
+                  downloading: t.downloading,
+                  downloadComplete: t.downloadComplete,
+                }}
+                language={language}
+              />
             </div>
-            <h1 className="text-3xl font-light tracking-tight bg-gradient-to-r from-zinc-800 to-zinc-600 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent">
-              {t.title}
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-lg mx-auto">{t.subtitle}</p>
+
+            {/* Title Section */}
+            <div className="text-center space-y-3 mb-6">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <Building2 className="w-8 h-8 text-sky-600 dark:text-sky-400" />
+              </div>
+              <h1 className="text-3xl font-light tracking-tight bg-gradient-to-r from-zinc-800 to-zinc-600 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent">
+                {t.title}
+              </h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 max-w-lg mx-auto">{t.subtitle}</p>
+            </div>
           </div>
 
           {/* ===== SIMPLE INPUTS (4 main sliders) ===== */}

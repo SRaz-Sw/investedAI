@@ -116,6 +116,11 @@ export interface RealEstateProTranslation {
 	shareCalculation: string;
 	linkCopied: string;
 
+	// Excel export
+	exportToExcel: string;
+	downloading: string;
+	downloadComplete: string;
+
 	// Units & Formatting
 	perMonth: string;
 	perYear: string;
@@ -253,6 +258,11 @@ export const realEstateProTranslations: Record<
 		shareCalculation: 'Share Calculation',
 		linkCopied: 'Link Copied!',
 
+		// Excel export
+		exportToExcel: 'Export to Excel',
+		downloading: 'Downloading...',
+		downloadComplete: 'Downloaded!',
+
 		// Units
 		perMonth: '/mo',
 		perYear: '/yr',
@@ -378,6 +388,11 @@ export const realEstateProTranslations: Record<
 		// Share button
 		shareCalculation: 'שתף חישוב',
 		linkCopied: 'הקישור הועתק!',
+
+		// Excel export
+		exportToExcel: 'ייצוא לאקסל',
+		downloading: 'מוריד...',
+		downloadComplete: 'הורדה הושלמה!',
 
 		// Units
 		perMonth: '/חודש',

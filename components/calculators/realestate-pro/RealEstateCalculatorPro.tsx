@@ -40,6 +40,7 @@ import { ResultsPanel } from './components/ResultsPanel';
 import { ProjectionChart } from './components/ProjectionChart';
 import { WealthChart } from './components/WealthChart';
 import { ShareButton } from './components/ShareButton';
+import { ExportButton } from '@/components/calculators/ExportButton';
 
 export function RealEstateCalculatorPro() {
 	const { language, direction } = useTranslationStore();
@@ -119,11 +120,35 @@ export function RealEstateCalculatorPro() {
 								{t.subtitle}
 							</p>
 						</div>
-						<ShareButton
-							inputs={inputs}
-							copyShareUrl={copyShareUrl}
-							translations={t}
-						/>
+						<div className="flex gap-2">
+							<ExportButton
+								inputs={{
+									propertyValue: inputs.purchasePrice,
+									belowMarketPercent: inputs.belowMarketPercent,
+									downPaymentPercent: inputs.downPaymentPercent,
+									closingCosts: inputs.closingCosts,
+									monthlyRent: inputs.monthlyRent,
+									appreciation: inputs.appreciationRate,
+									mortgageRate: inputs.mortgageRate,
+									mortgageTerm: inputs.mortgageTermYears,
+									rentGrowth: inputs.rentGrowthRate,
+									operatingCostsPercent: (inputs.insuranceTaxMonthly * 12 +
+										inputs.purchasePrice * inputs.maintenancePercent / 100) /
+										inputs.purchasePrice * 100,
+								}}
+								translations={{
+									exportToExcel: t.exportToExcel,
+									downloading: t.downloading,
+									downloadComplete: t.downloadComplete,
+								}}
+								language={language}
+							/>
+							<ShareButton
+								inputs={inputs}
+								copyShareUrl={copyShareUrl}
+								translations={t}
+							/>
+						</div>
 					</div>
 
 					{/* ===== STORYLINE TEXT ===== */}
