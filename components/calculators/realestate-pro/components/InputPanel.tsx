@@ -24,7 +24,7 @@ interface InputPanelProps {
 	inputs: RealEstateInputs;
 	onInputChange: <K extends keyof RealEstateInputs>(
 		key: K,
-		value: number
+		value: number,
 	) => void;
 	sliderConfigs: SliderConfigs;
 	translations: any;
@@ -121,7 +121,7 @@ export function InputPanel({
 	return (
 		<div className="space-y-4">
 			{/* Basic Inputs */}
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
 				{basicInputs.map((key) => (
 					<div key={key}>{renderSlider(key)}</div>
 				))}
@@ -146,7 +146,7 @@ export function InputPanel({
 					</Button>
 				</CollapsibleTrigger>
 				<CollapsibleContent className="pt-4">
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-zinc-50/50 dark:bg-zinc-800/30 rounded-xl border border-zinc-200/50 dark:border-zinc-700/30">
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4 p-4 bg-zinc-50/50 dark:bg-zinc-800/30 rounded-xl border border-zinc-200/50 dark:border-zinc-700/30">
 						{advancedInputs.map((key) => (
 							<div key={key}>{renderSlider(key)}</div>
 						))}

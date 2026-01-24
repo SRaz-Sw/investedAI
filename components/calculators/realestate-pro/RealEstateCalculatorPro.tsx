@@ -103,7 +103,7 @@ export function RealEstateCalculatorPro() {
 			className="font-sans p-4 md:p-8 min-h-screen flex flex-col justify-center items-center"
 			dir={direction()}
 		>
-			<Card className="w-full max-w-7xl overflow-hidden border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-xl bg-white/80 dark:bg-zinc-900/70 rounded-3xl mb-8">
+			<Card className="w-full max-w-7xl xl:max-w-full overflow-hidden border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-xl bg-white/80 dark:bg-zinc-900/70 rounded-3xl mb-8">
 				<div className="absolute inset-0 bg-gradient-to-tr from-zinc-100/30 via-transparent to-emerald-100/30 dark:from-zinc-900/20 dark:to-emerald-900/20 rounded-3xl"></div>
 
 				<CardContent className="space-y-6 md:space-y-8 p-4 md:p-8 relative z-10">
