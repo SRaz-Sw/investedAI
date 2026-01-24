@@ -90,6 +90,7 @@ export function InputPanel({
 								formatted = formatted + config.suffix;
 							return formatted;
 						}}
+						inputClassName="w-[90px]"
 					/>
 				</div>
 			</div>

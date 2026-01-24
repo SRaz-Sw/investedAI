@@ -14,6 +14,7 @@ interface SliderWithInputProps {
 	formatValue?: (value: number) => string;
 	parseValue?: (value: string) => number;
 	className?: string;
+	inputClassName?: string;
 	/** @deprecated No longer needed - all valid numbers are now accepted */
 	allowNegative?: boolean;
 }
@@ -27,6 +28,7 @@ export function SliderWithInput({
 	formatValue = (v) => v.toString(),
 	parseValue = (v) => Number(v.replace(/[^0-9.-]+/g, '')),
 	className,
+	inputClassName,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	allowNegative,
 }: SliderWithInputProps) {
@@ -102,7 +104,7 @@ export function SliderWithInput({
 					onChange={handleInputChange}
 					onFocus={handleInputFocus}
 					onBlur={handleInputBlur}
-					className="w-[140px]"
+					className={cn('w-[140px]', inputClassName)}
 				/>
 			</div>
 		</div>
