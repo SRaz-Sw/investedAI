@@ -122,5 +122,14 @@ export function getSliderConfigs(
 			suffix: ' ' + t.years,
 			advanced: true,
 		},
+		cashFlowReinvestmentRate: {
+			label: t.cashFlowReinvestment,
+			helpText: t.cashFlowReinvestment_help,
+			min: 0,
+			max: 20,
+			step: 0.1,
+			suffix: '%',
+			advanced: true,
+		},
 	};
 }

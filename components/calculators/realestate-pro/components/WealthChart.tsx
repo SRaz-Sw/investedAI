@@ -6,6 +6,7 @@
  * - Cash Flow (accumulated rental income)
  * - Equity Built (principal paydown)
  * - Appreciation (property value growth)
+ * - Portfolio Growth (compound growth from reinvesting cash flow) - optional
  */
 
 'use client';
@@ -31,6 +32,7 @@ interface WealthChartDataPoint {
 	cashFlow: number;
 	equity: number;
 	appreciation: number;
+	portfolioGrowth: number; // Extra growth from reinvesting cash flow (portfolio value - contributions)
 	total: number;
 }
 
@@ -43,17 +45,20 @@ interface WealthChartProps {
 		accumulatedCashFlow: string;
 		accumulatedEquity: string;
 		accumulatedAppreciation: string;
+		investmentPortfolio: string;
 		year: string;
 	};
 	initialMarketValue: number;
 	loanAmount: number;
 	downPayment: number;
+	cashFlowReinvestmentRate: number; // When > 0, show the portfolio growth layer
 }
 
 const COLORS = {
 	cashFlow: '#f59e0b', // Amber
 	equity: '#0ea5e9', // Sky
 	appreciation: '#10b981', // Emerald
+	portfolioGrowth: '#8b5cf6', // Violet - for reinvested cash flow growth
 	grid: '#e5e7eb',
 	text: '#6b7280',
 };
@@ -66,7 +71,11 @@ export const WealthChart = memo(function WealthChart({
 	initialMarketValue,
 	loanAmount,
 	downPayment,
+	cashFlowReinvestmentRate,
 }: WealthChartProps) {
+	// CFRI: Determine if we should show the portfolio growth layer
+	const showPortfolioGrowth_CFRI = cashFlowReinvestmentRate > 0;
+
 	// Transform data to monthly wealth breakdown
 	const wealthData = useMemo(() => {
 		const monthlyData: WealthChartDataPoint[] = [];
@@ -87,6 +96,18 @@ export const WealthChart = memo(function WealthChart({
 				point.propertyValue - initialMarketValue
 			);
 
+			// CFRI: Portfolio growth - the EXTRA value from compound growth
+			// This is portfolio value minus what was contributed
+			// Shows the "bonus" from reinvesting rather than just accumulating
+			let portfolioGrowth_CFRI = 0;
+			if (showPortfolioGrowth_CFRI && point.portfolioValue_CFRI > 0) {
+				// Portfolio growth = total portfolio value - contributions
+				portfolioGrowth_CFRI = Math.max(
+					0,
+					point.portfolioValue_CFRI - point.totalContributions_CFRI
+				);
+			}
+
 			monthlyData.push({
 				year: point.year + (point.month % 12) / 12, // For x-axis positioning
 				month: point.month,
@@ -94,12 +115,13 @@ export const WealthChart = memo(function WealthChart({
 				cashFlow: Math.round(cashFlow),
 				equity: Math.round(equity),
 				appreciation: Math.round(appreciation),
-				total: Math.round(cashFlow + equity + appreciation),
+				portfolioGrowth: Math.round(portfolioGrowth_CFRI),
+				total: Math.round(cashFlow + equity + appreciation + portfolioGrowth_CFRI),
 			});
 		}
 
 		return monthlyData;
-	}, [data, loanAmount, initialMarketValue]);
+	}, [data, loanAmount, initialMarketValue, showPortfolioGrowth_CFRI]);
 
 	const CustomTooltip = useMemo(() => {
 		return function TooltipContent({ active, payload }: any) {
@@ -149,6 +171,18 @@ export const WealthChart = memo(function WealthChart({
 							</span>
 						</div>
 
+						{/* CFRI: Only show portfolio growth if reinvestment is enabled */}
+						{showPortfolioGrowth_CFRI && point.portfolioGrowth > 0 && (
+							<div className="flex justify-between">
+								<span style={{ color: COLORS.portfolioGrowth }}>
+									● {t.investmentPortfolio}
+								</span>
+								<span className="font-mono">
+									{formatAxisValue(point.portfolioGrowth)}
+								</span>
+							</div>
+						)}
+
 						<div className="border-t pt-2 mt-2 flex justify-between font-bold">
 							<span className="text-gray-700 dark:text-gray-300">
 								Total
@@ -161,7 +195,7 @@ export const WealthChart = memo(function WealthChart({
 				</div>
 			);
 		};
-	}, [language, t]);
+	}, [language, t, showPortfolioGrowth_CFRI]);
 
 	return (
 		<div className="w-full h-[350px]">
@@ -253,6 +287,19 @@ export const WealthChart = memo(function WealthChart({
 						fillOpacity={0.6}
 						isAnimationActive={false}
 					/>
+					{/* CFRI: Portfolio growth layer - only shown when cash flow reinvestment is enabled */}
+					{showPortfolioGrowth_CFRI && (
+						<Area
+							type="monotone"
+							dataKey="portfolioGrowth"
+							name={t.investmentPortfolio}
+							stackId="1"
+							stroke={COLORS.portfolioGrowth}
+							fill={COLORS.portfolioGrowth}
+							fillOpacity={0.6}
+							isAnimationActive={false}
+						/>
+					)}
 				</AreaChart>
 			</ResponsiveContainer>
 		</div>

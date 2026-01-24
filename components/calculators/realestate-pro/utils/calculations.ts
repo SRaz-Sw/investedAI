@@ -329,6 +329,7 @@ export function generateProjectionData(
 		maintenancePercent,
 		mortgageRate,
 		mortgageTermYears,
+		cashFlowReinvestmentRate,
 	} = inputs;
 
 	const {
@@ -351,6 +352,16 @@ export function generateProjectionData(
 	const managementFactor = propertyManagementPercent / 100;
 	const maintenanceMonthlyFactor = maintenancePercent / 100 / 12;
 
+	// === CASH FLOW REINVESTMENT (CFRI) PORTFOLIO ===
+	// When cashFlowReinvestmentRate > 0, positive cash flow is invested into a
+	// compounding portfolio (e.g., S&P 500). This converts annual rate to monthly.
+	// All CFRI-related variables are suffixed with _CFRI for clarity.
+	const reinvestmentRate_CFRI = cashFlowReinvestmentRate || 0;
+	const monthlyPortfolioGrowthFactor_CFRI =
+		reinvestmentRate_CFRI > 0
+			? Math.pow(1 + reinvestmentRate_CFRI / 100, 1 / 12)
+			: 1;
+
 	// Pre-allocate array for better memory performance
 	const chartData: ChartDataPoint[] = new Array(TOTAL_MONTHS + 1);
 
@@ -360,6 +371,15 @@ export function generateProjectionData(
 	let mortgageBalance = loanAmount;
 	// Closing costs are a one-time expense at purchase, reducing overall returns
 	let cumulativeCashFlow = -inputs.closingCosts;
+
+	// CFRI: Investment portfolio for reinvested cash flow
+	// Starts at $0 - only grows from positive monthly cash flow contributions
+	// that compound at the reinvestment rate (e.g., 8% for S&P 500)
+	let portfolioValue_CFRI = 0;
+
+	// CFRI: Track total positive cash flow contributions separately
+	// This is used to calculate the "growth" portion (portfolio - contributions)
+	let totalContributions_CFRI = 0;
 
 	// === MAIN CALCULATION LOOP ===
 	for (let month = 0; month <= TOTAL_MONTHS; month++) {
@@ -411,6 +431,19 @@ export function generateProjectionData(
 			currentRent - totalExpenses - effectiveMortgage;
 		cumulativeCashFlow += monthlyCashFlow;
 
+		// === CFRI: INVESTMENT PORTFOLIO (cash flow reinvestment) ===
+		// Two-step process each month:
+		// 1. Apply compound growth to existing portfolio balance
+		// 2. Add new contribution from positive cash flow only
+		//    (negative cash flow is covered by investor separately - not withdrawn)
+		if (month > 0 && reinvestmentRate_CFRI > 0) {
+			portfolioValue_CFRI *= monthlyPortfolioGrowthFactor_CFRI;
+		}
+		if (monthlyCashFlow > 0) {
+			portfolioValue_CFRI += monthlyCashFlow;
+			totalContributions_CFRI += monthlyCashFlow; // Track contributions separately
+		}
+
 		// === TOTAL EQUITY BUILT ===
 		const appreciationGained = currentValue - initialMarketValue;
 		const principalPaid = loanAmount - mortgageBalance;
@@ -418,9 +451,12 @@ export function generateProjectionData(
 			downPayment + appreciationGained + principalPaid;
 
 		// === NET WORTH ===
-		// Net worth = property value - mortgage balance + cumulative cash flow
-		const netWorth =
-			currentValue - mortgageBalance + cumulativeCashFlow;
+		// Net worth = property value - mortgage balance + cash component
+		// When CFRI is active (reinvestmentRate_CFRI > 0), use portfolio value instead of cumulative cash flow
+		// This reflects the actual wealth when cash flow is reinvested in the market
+		const cashComponent_CFRI =
+			reinvestmentRate_CFRI > 0 ? portfolioValue_CFRI : cumulativeCashFlow;
+		const netWorth = currentValue - mortgageBalance + cashComponent_CFRI;
 
 		// === STORE DATA POINT ===
 		chartData[month] = {
@@ -436,6 +472,9 @@ export function generateProjectionData(
 			monthlyCashFlow,
 			cumulativeCashFlow,
 			totalEquityBuilt,
+			// CFRI fields - suffixed for clarity
+			portfolioValue_CFRI,
+			totalContributions_CFRI,
 		};
 	}
 

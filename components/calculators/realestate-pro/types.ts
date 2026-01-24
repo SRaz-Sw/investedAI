@@ -30,6 +30,11 @@ export interface RealEstateInputs {
 	insuranceTaxMonthly: number; // Monthly insurance + property tax
 	propertyManagementPercent: number; // % of rent
 	maintenancePercent: number; // % of property value annually
+
+	// Cash flow reinvestment
+	// When > 0, positive monthly cash flow is invested in a portfolio (e.g., S&P 500)
+	// that compounds at this annual rate. Default 0 = cash just accumulates.
+	cashFlowReinvestmentRate: number; // e.g., 8% for S&P 500 historical average
 }
 
 // ============================================================================
@@ -120,6 +125,12 @@ export interface ChartDataPoint {
 	monthlyCashFlow: number; // Net cash flow this month
 	cumulativeCashFlow: number; // Total cash flow since start
 	totalEquityBuilt: number; // downPayment + appreciation + principal paid
+
+	// === CFRI (Cash Flow Reinvestment) fields ===
+	// When cashFlowReinvestmentRate > 0, positive cash flow is invested in a
+	// compounding portfolio (e.g., S&P 500). Suffixed with _CFRI for clarity.
+	portfolioValue_CFRI: number; // Total portfolio value (contributions + growth)
+	totalContributions_CFRI: number; // Sum of all positive monthly cash flows contributed
 }
 
 // ============================================================================
@@ -172,6 +183,7 @@ export const URL_KEYS: Record<keyof RealEstateInputs, string> = {
 	maintenancePercent: 'mt',
 	mortgageRate: 'mi',
 	mortgageTermYears: 'my',
+	cashFlowReinvestmentRate: 'cr', // cash reinvestment rate
 };
 
 // ============================================================================
@@ -192,4 +204,5 @@ export const DEFAULT_INPUTS: RealEstateInputs = {
 	maintenancePercent: 0.5,
 	mortgageRate: 6.5,
 	mortgageTermYears: 30,
+	cashFlowReinvestmentRate: 0, // Default 0 = cash accumulates without growth
 };

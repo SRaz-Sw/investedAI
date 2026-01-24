@@ -29,6 +29,7 @@ export interface RealEstateProTranslation {
 	maintenance: string;
 	mortgageRate: string;
 	mortgageTerm: string;
+	cashFlowReinvestment: string;
 
 	// Help text for sliders
 	purchasePrice_help: string;
@@ -44,6 +45,7 @@ export interface RealEstateProTranslation {
 	maintenance_help: string;
 	mortgageRate_help: string;
 	mortgageTerm_help: string;
+	cashFlowReinvestment_help: string;
 
 	// Derived values
 	marketValue: string;
@@ -132,6 +134,7 @@ export interface RealEstateProTranslation {
 	accumulatedCashFlow: string;
 	accumulatedEquity: string;
 	accumulatedAppreciation: string;
+	investmentPortfolio: string; // For the reinvested cash flow portfolio layer
 }
 
 export const realEstateProTranslations: Record<
@@ -161,6 +164,7 @@ export const realEstateProTranslations: Record<
 		maintenance: 'Annual Maintenance',
 		mortgageRate: 'Mortgage Rate',
 		mortgageTerm: 'Mortgage Term',
+		cashFlowReinvestment: 'Cash Flow Reinvestment',
 
 		// Help text
 		purchasePrice_help:
@@ -186,6 +190,8 @@ export const realEstateProTranslations: Record<
 			'Annual maintenance costs as % of property value',
 		mortgageRate_help: 'Annual interest rate on your mortgage loan',
 		mortgageTerm_help: 'Length of the mortgage in years',
+		cashFlowReinvestment_help:
+			'Annual return rate if you reinvest positive cash flow into the stock market (e.g., S&P 500 averages ~8%). Set to 0 if cash just accumulates.',
 
 		// Derived values
 		marketValue: 'Market Value',
@@ -274,6 +280,7 @@ export const realEstateProTranslations: Record<
 		accumulatedCashFlow: 'Cash Flow',
 		accumulatedEquity: 'Equity Built',
 		accumulatedAppreciation: 'Appreciation',
+		investmentPortfolio: 'Portfolio Growth',
 	},
 
 	he: {
@@ -299,6 +306,7 @@ export const realEstateProTranslations: Record<
 		maintenance: 'תחזוקה שנתית',
 		mortgageRate: 'ריבית משכנתא',
 		mortgageTerm: 'תקופת משכנתא',
+		cashFlowReinvestment: 'השקעת תזרים מזומנים',
 
 		// Help text
 		purchasePrice_help:
@@ -317,6 +325,8 @@ export const realEstateProTranslations: Record<
 		maintenance_help: 'עלויות תחזוקה שנתיות כ-% משווי הנכס',
 		mortgageRate_help: 'שיעור הריבית השנתי על הלוואת המשכנתא',
 		mortgageTerm_help: 'אורך המשכנתא בשנים',
+		cashFlowReinvestment_help:
+			'תשואה שנתית אם משקיעים תזרים חיובי בשוק ההון (למשל S&P 500 מניב ~8% בממוצע). הגדר 0 אם המזומן פשוט מצטבר.',
 
 		// Derived values
 		marketValue: 'שווי שוק',
@@ -405,5 +415,6 @@ export const realEstateProTranslations: Record<
 		accumulatedCashFlow: 'תזרים מזומנים',
 		accumulatedEquity: 'הון עצמי',
 		accumulatedAppreciation: 'עליית ערך',
+		investmentPortfolio: 'צמיחת תיק השקעות',
 	},
 };

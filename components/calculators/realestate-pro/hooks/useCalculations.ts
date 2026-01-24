@@ -64,6 +64,7 @@ export function useCalculations(
 			inputs.insuranceTaxMonthly,
 			inputs.propertyManagementPercent,
 			inputs.maintenancePercent,
+			inputs.cashFlowReinvestmentRate,
 		]
 	);
 

@@ -115,6 +115,7 @@ export function InputPanel({
 		'propertyManagementPercent',
 		'maintenancePercent',
 		'closingCosts',
+		'cashFlowReinvestmentRate',
 	];
 
 	return (

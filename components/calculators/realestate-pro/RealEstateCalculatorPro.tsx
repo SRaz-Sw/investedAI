@@ -343,6 +343,7 @@ export function RealEstateCalculatorPro() {
 								initialMarketValue={derived.marketValue}
 								loanAmount={derived.loanAmount}
 								downPayment={derived.downPayment}
+								cashFlowReinvestmentRate={inputs.cashFlowReinvestmentRate}
 							/>
 						</CardContent>
 					</Card>
