@@ -19,6 +19,7 @@ import {
 	CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import type { RealEstateInputs, SliderConfigs } from '../types';
+import { calculateMonthlyMortgage } from '../utils/calculations';
 
 interface InputPanelProps {
 	inputs: RealEstateInputs;
@@ -67,13 +68,82 @@ export function InputPanel({
 		const config = sliderConfigs[key];
 		const value = inputs[key];
 
+		// Calculate additional info for specific sliders
+		// Note: actualPurchasePrice = marketValue × (1 - belowMarket%)
+		const actualPurchasePrice =
+			inputs.purchasePrice * (1 - inputs.belowMarketPercent / 100);
+		const downPaymentAmount =
+			actualPurchasePrice * (inputs.downPaymentPercent / 100);
+		const loanAmount = actualPurchasePrice - downPaymentAmount;
+
+		let additionalInfo: string | undefined;
+
+		switch (key) {
+			case 'belowMarketPercent': {
+				// Instant equity = discount from market value
+				const instantEquity = inputs.purchasePrice * (value / 100);
+				if (instantEquity > 0) {
+					additionalInfo = `${formatCurrency(instantEquity)}`;
+				}
+				break;
+			}
+			case 'mortgageRate': {
+				// Monthly mortgage payment (Spitzer/PMT formula)
+				if (loanAmount > 0) {
+					const monthlyPayment = calculateMonthlyMortgage(
+						loanAmount,
+						value, // current mortgage rate from slider
+						inputs.mortgageTermYears,
+					);
+					additionalInfo = `${formatCurrency(monthlyPayment)}/mo`;
+				}
+				break;
+			}
+			case 'downPaymentPercent': {
+				// Down payment in dollars (based on actual purchase price)
+				const downPayment = actualPurchasePrice * (value / 100);
+				additionalInfo = `${formatCurrency(downPayment)}`;
+				break;
+			}
+			case 'vacancyRate': {
+				// Monthly vacancy loss
+				const vacancyLoss = inputs.monthlyRent * (value / 100);
+				additionalInfo = `${formatCurrency(vacancyLoss)}/mo`;
+				break;
+			}
+			case 'maintenancePercent': {
+				// Annual maintenance cost (based on property value)
+				const maintenance = inputs.purchasePrice * (value / 100);
+				additionalInfo = `${formatCurrency(maintenance)}/yr`;
+				break;
+			}
+			case 'propertyManagementPercent': {
+				// Monthly management fee
+				const managementFee = inputs.monthlyRent * (value / 100);
+				additionalInfo = `${formatCurrency(managementFee)}/mo`;
+				break;
+			}
+			default: {
+				additionalInfo = undefined;
+			}
+		}
+
 		return (
-			<div className="bg-gradient-to-br from-white/70 to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md p-4 rounded-xl border border-white/50 dark:border-zinc-700/30 shadow-md">
-				<div className="flex items-center">
-					<Label className="text-gray-700 dark:text-gray-300">
-						{config.label}
-					</Label>
-					<HelpButton configKey={key} />
+			<div className="bg-gradient-to-br from-white/70 group to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md p-4 rounded-xl border border-white/50 dark:border-zinc-700/30 shadow-md">
+				<div className="flex items-start justify-between">
+					<div className="flex items-center">
+						<Label className="text-gray-700 dark:text-gray-300">
+							{config.label}
+						</Label>
+						<HelpButton configKey={key} />
+					</div>
+					<div>
+						{additionalInfo && (
+							<div className="text-xs font-bold text-gray-700 dark:text-gray-200  pl-1 opacity-30 group-hover:opacity-80 transition-opacity">
+								{additionalInfo}
+							</div>
+						)}
+					</div>
 				</div>
 				<div className="pt-2">
 					<SliderWithInput
@@ -91,6 +161,7 @@ export function InputPanel({
 							return formatted;
 						}}
 						inputClassName="w-[90px]"
+						additionalInfo={additionalInfo}
 					/>
 				</div>
 			</div>
