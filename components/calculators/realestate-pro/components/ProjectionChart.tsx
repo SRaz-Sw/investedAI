@@ -42,6 +42,7 @@ interface ProjectionChartProps {
   mortgageTermYears: number;
   language: 'en' | 'he';
   translations: any;
+  cashFlowReinvestmentRate: number; // CFRI: When > 0, show portfolio line
 }
 
 const COLORS = {
@@ -50,19 +51,24 @@ const COLORS = {
   mortgageBalance: '#f87171',
   monthlyRent: '#3b82f6',
   netWorth: '#8b5cf6',
+  portfolioValue_CFRI: '#ec4899', // Pink - distinct color for CFRI portfolio
   grid: '#e5e7eb',
   text: '#6b7280',
 };
 
 // Data keys that can be toggled
-type ToggleableKey = 'propertyValue' | 'equity' | 'mortgageBalance' | 'monthlyRent' | 'netWorth';
+type ToggleableKey = 'propertyValue' | 'equity' | 'mortgageBalance' | 'monthlyRent' | 'netWorth' | 'portfolioValue_CFRI';
 
-export const ProjectionChart = memo(function ProjectionChart({ 
-  data, 
+export const ProjectionChart = memo(function ProjectionChart({
+  data,
   mortgageTermYears,
   language,
   translations: t,
+  cashFlowReinvestmentRate,
 }: ProjectionChartProps) {
+  // CFRI: Determine if we should show the portfolio line
+  const showPortfolio_CFRI = cashFlowReinvestmentRate > 0;
+
   // Track which lines are hidden (toggled off via legend)
   const [hiddenLines, setHiddenLines] = useState<Set<ToggleableKey>>(new Set());
   
@@ -140,17 +146,25 @@ export const ProjectionChart = memo(function ProjectionChart({
               </div>
             </div>
             
+            {/* CFRI: Show portfolio value if reinvestment is active */}
+            {showPortfolio_CFRI && point.portfolioValue_CFRI > 0 && (
+              <div className="flex justify-between mt-2">
+                <span style={{ color: COLORS.portfolioValue_CFRI }}>● {t.investmentPortfolio}</span>
+                <span className="font-mono">{formatAxisValue(point.portfolioValue_CFRI)}</span>
+              </div>
+            )}
+
             <div className="border-t pt-2 mt-2 flex justify-between font-medium bg-violet-50 dark:bg-violet-950/30 -mx-4 px-4 py-2 rounded-b-xl">
               <span className="text-violet-700 dark:text-violet-300">{t.netWorth}</span>
               <span className="text-violet-700 dark:text-violet-300 font-bold">
-                {formatAxisValue(point.cumulativeCashFlow + point.propertyValue - point.mortgageBalance)}
+                {formatAxisValue(point.netWorth)}
               </span>
             </div>
           </div>
         </div>
       );
     };
-  }, [language, t]);
+  }, [language, t, showPortfolio_CFRI]);
 
   return (
     <div className="w-full h-[400px] md:h-[500px]">
@@ -271,7 +285,23 @@ export const ProjectionChart = memo(function ProjectionChart({
             isAnimationActive={false}
             hide={!isVisible('netWorth')}
           />
-          
+
+          {/* CFRI: Investment Portfolio - pink line (only when reinvestment is active) */}
+          {showPortfolio_CFRI && (
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="portfolioValue_CFRI"
+              name={t.investmentPortfolio}
+              stroke={COLORS.portfolioValue_CFRI}
+              strokeWidth={2}
+              strokeDasharray="3 3"
+              dot={false}
+              isAnimationActive={false}
+              hide={!isVisible('portfolioValue_CFRI')}
+            />
+          )}
+
           {/* Mortgage Balance - dashed */}
           <Line
             yAxisId="left"

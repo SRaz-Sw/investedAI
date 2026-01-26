@@ -247,6 +247,7 @@ export function RealEstateCalculatorPro() {
 								}
 								language={language}
 								translations={t}
+								cashFlowReinvestmentRate={inputs.cashFlowReinvestmentRate}
 							/>
 						</CardContent>
 					</Card>
