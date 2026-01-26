@@ -45,7 +45,7 @@ interface WealthChartProps {
 		accumulatedCashFlow: string;
 		accumulatedEquity: string;
 		accumulatedAppreciation: string;
-		investmentPortfolio: string;
+		portfolioGrowth: string;
 		year: string;
 	};
 	initialMarketValue: number;
@@ -96,15 +96,15 @@ export const WealthChart = memo(function WealthChart({
 				point.propertyValue - initialMarketValue
 			);
 
-			// CFRI: Portfolio growth - the EXTRA value from compound growth
-			// This is portfolio value minus what was contributed
-			// Shows the "bonus" from reinvesting rather than just accumulating
+			// CFRI: Portfolio growth - the EXTRA value from reinvesting vs just accumulating
+			// This is: portfolioValue - cumulativeCashFlow (what you'd have without reinvesting)
+			// Shows the incremental benefit of enabling CFRI
 			let portfolioGrowth_CFRI = 0;
 			if (showPortfolioGrowth_CFRI && point.portfolioValue_CFRI > 0) {
-				// Portfolio growth = total portfolio value - contributions
+				// Portfolio growth = total portfolio value - what you'd have without reinvesting
 				portfolioGrowth_CFRI = Math.max(
 					0,
-					point.portfolioValue_CFRI - point.totalContributions_CFRI
+					point.portfolioValue_CFRI - cashFlow
 				);
 			}
 
@@ -175,7 +175,7 @@ export const WealthChart = memo(function WealthChart({
 						{showPortfolioGrowth_CFRI && point.portfolioGrowth > 0 && (
 							<div className="flex justify-between">
 								<span style={{ color: COLORS.portfolioGrowth }}>
-									● {t.investmentPortfolio}
+									● {t.portfolioGrowth}
 								</span>
 								<span className="font-mono">
 									{formatAxisValue(point.portfolioGrowth)}
@@ -292,7 +292,7 @@ export const WealthChart = memo(function WealthChart({
 						<Area
 							type="monotone"
 							dataKey="portfolioGrowth"
-							name={t.investmentPortfolio}
+							name={t.portfolioGrowth}
 							stackId="1"
 							stroke={COLORS.portfolioGrowth}
 							fill={COLORS.portfolioGrowth}

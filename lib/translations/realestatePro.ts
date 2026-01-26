@@ -134,7 +134,8 @@ export interface RealEstateProTranslation {
 	accumulatedCashFlow: string;
 	accumulatedEquity: string;
 	accumulatedAppreciation: string;
-	investmentPortfolio: string; // For the reinvested cash flow portfolio layer
+	investmentPortfolio: string; // Full portfolio value (ProjectionChart)
+	portfolioGrowth: string; // Growth portion only (WealthChart)
 }
 
 export const realEstateProTranslations: Record<
@@ -280,7 +281,8 @@ export const realEstateProTranslations: Record<
 		accumulatedCashFlow: 'Cash Flow',
 		accumulatedEquity: 'Equity Built',
 		accumulatedAppreciation: 'Appreciation',
-		investmentPortfolio: 'Portfolio Growth',
+		investmentPortfolio: 'Investment Portfolio',
+		portfolioGrowth: 'Portfolio Growth',
 	},
 
 	he: {
@@ -415,6 +417,7 @@ export const realEstateProTranslations: Record<
 		accumulatedCashFlow: 'תזרים מזומנים',
 		accumulatedEquity: 'הון עצמי',
 		accumulatedAppreciation: 'עליית ערך',
-		investmentPortfolio: 'צמיחת תיק השקעות',
+		investmentPortfolio: 'תיק השקעות',
+		portfolioGrowth: 'צמיחת תיק השקעות',
 	},
 };
