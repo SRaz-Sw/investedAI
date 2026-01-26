@@ -161,7 +161,6 @@ export function InputPanel({
 							return formatted;
 						}}
 						inputClassName="w-[90px]"
-						additionalInfo={additionalInfo}
 					/>
 				</div>
 			</div>

@@ -8,14 +8,14 @@ import type { SliderConfigs } from '../types';
 import type { RealEstateProTranslation } from '@/lib/translations/realestatePro';
 
 export function getSliderConfigs(
-	t: RealEstateProTranslation
+	t: RealEstateProTranslation,
 ): SliderConfigs {
 	return {
 		purchasePrice: {
 			label: t.purchasePrice,
 			helpText: t.purchasePrice_help,
-			min: 50000,
-			max: 300000,
+			min: 30000,
+			max: 500000,
 			step: 5000,
 			prefix: '$',
 		},
@@ -56,7 +56,7 @@ export function getSliderConfigs(
 			helpText: t.downPayment_help,
 			min: 0,
 			max: 100,
-			step: 5,
+			step: 1,
 			suffix: '%',
 		},
 		closingCosts: {
