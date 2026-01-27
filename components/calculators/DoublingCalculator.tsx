@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import * as SliderPrimitive from '@radix-ui/react-slider';
 import { useTranslationStore } from "@/lib/translations";
 import { doublingTranslations } from "@/lib/translations/doubling";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,6 +11,8 @@ export function DoublingCalculator() {
   const t = doublingTranslations[language];
 
   const [rate, setRate] = useState(7);
+  const [inputValue, setInputValue] = useState('7');
+  const [isFocused, setIsFocused] = useState(false);
   const [years, setYears] = useState(72 / 7);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -21,7 +24,32 @@ export function DoublingCalculator() {
     return () => clearTimeout(timer);
   }, [rate]);
 
-  const progressPercentage = Math.min((rate / 20) * 100, 100);
+  useEffect(() => {
+    if (!isFocused) {
+      setInputValue(String(rate));
+    }
+  }, [rate, isFocused]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    const parsed = parseFloat(value);
+    if (!isNaN(parsed) && parsed > 0) {
+      setRate(parsed);
+    }
+  };
+
+  const handleInputBlur = () => {
+    setIsFocused(false);
+    const parsed = parseFloat(inputValue);
+    if (isNaN(parsed) || parsed <= 0) {
+      setInputValue(String(rate));
+    } else {
+      setRate(parsed);
+      setInputValue(String(parsed));
+    }
+  };
+
   const yearsDisplay = years === Infinity ? '∞' : years.toFixed(1);
   const preciseYears = (Math.log(2) / Math.log(1 + rate / 100)).toFixed(2);
 
@@ -47,42 +75,41 @@ export function DoublingCalculator() {
 
           <CardContent className="space-y-8">
             {/* Slider Section */}
-            <div className="relative">
-              <div className="flex justify-between items-end mb-4">
-                <span className="text-muted-foreground text-sm">{t.annualReturnRate}</span>
+            <div className="space-y-6">
+              <div className="flex justify-between items-end">
+                <span className="text-muted-foreground text-sm font-medium">{t.annualReturnRate}</span>
                 <div className="flex items-baseline gap-1">
-                  <span
-                    className={`text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent transition-all duration-300 ${isAnimating ? 'scale-110' : 'scale-100'}`}
-                  >
-                    {rate}
-                  </span>
-                  <span className="text-2xl text-muted-foreground">%</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={handleInputBlur}
+                    className={`w-24 md:w-32 text-right text-5xl md:text-6xl font-bold bg-transparent bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent transition-all duration-300 outline-none focus:ring-2 focus:ring-primary/30 rounded-lg ${isAnimating ? 'scale-105' : 'scale-100'}`}
+                  />
+                  <span className="text-2xl font-semibold text-muted-foreground">%</span>
                 </div>
               </div>
 
-              <div className="relative h-3 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary via-primary/80 to-primary/60 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${progressPercentage}%` }}
-                />
-                <div
-                  className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-background border-2 border-primary rounded-full shadow-lg transition-all duration-300 ease-out"
-                  style={{ [direction() === 'rtl' ? 'right' : 'left']: `calc(${progressPercentage}% - 12px)` }}
-                />
+              <div className="pt-2 pb-4">
+                <SliderPrimitive.Root
+                  className="relative flex w-full touch-none select-none items-center"
+                  value={[rate]}
+                  onValueChange={(v) => setRate(v[0])}
+                  min={1}
+                  max={20}
+                  step={0.5}
+                  aria-label="Annual Return Rate"
+                >
+                  <SliderPrimitive.Track className="relative h-3 w-full grow overflow-hidden rounded-full bg-primary/20">
+                    <SliderPrimitive.Range className="absolute h-full bg-gradient-to-r from-primary/80 to-primary rounded-full" />
+                  </SliderPrimitive.Track>
+                  <SliderPrimitive.Thumb className="block h-7 w-7 rounded-full border-4 border-primary bg-background shadow-lg ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:scale-110 cursor-grab active:cursor-grabbing" />
+                </SliderPrimitive.Root>
               </div>
 
-              <input
-                type="range"
-                min="1"
-                max="20"
-                step="0.5"
-                value={rate}
-                onChange={(e) => setRate(parseFloat(e.target.value))}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                style={{ direction: 'ltr' }}
-              />
-
-              <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+              <div className="flex justify-between text-xs text-muted-foreground font-medium">
                 <span>1%</span>
                 <span>20%</span>
               </div>
