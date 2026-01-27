@@ -9,6 +9,7 @@ export interface CompoundTranslation {
   targetAmount: string;
   monthlyInvestment: string;
   annualReturn: string;
+  dividendYield: string;
   monthlyRequired: string;
   initialGrowth: string;
   totalContributions: string;
@@ -43,6 +44,8 @@ export interface CompoundTranslation {
   period_desc: string;
   annualReturn_info: string;
   annualReturn_desc: string;
+  dividendYield_info: string;
+  dividendYield_desc: string;
 
   // Storyline translations
   ifYouStart: string;
@@ -66,6 +69,7 @@ export const compoundTranslations: Record<Language, CompoundTranslation> = {
     targetAmount: "Target Amount",
     monthlyInvestment: "Monthly Investment",
     annualReturn: "Annual Return Rate",
+    dividendYield: "Dividend Reinvestment",
     monthlyRequired: "Monthly Investment",
     initialGrowth: "Initial Investment Growth",
     totalContributions: "Total Contributions",
@@ -105,6 +109,9 @@ export const compoundTranslations: Record<Language, CompoundTranslation> = {
     annualReturn_info: "Annual Return Rate",
     annualReturn_desc: "The expected yearly percentage growth of your investments. This rate varies by investment type. Historical average for the S&P 500 is around 10%. The Nasdaq100 returned 19.7% between 2020 and 2025, while bonds and savings accounts typically offer lower returns with less risk.",
 
+    dividendYield_info: "Dividend Yield",
+    dividendYield_desc: "The annual percentage of your portfolio paid out as dividends. When reinvested quarterly, these dividends compound and boost your returns. The S&P 500 averages ~1.5% dividend yield, while high-dividend ETFs can yield 3-5%.",
+
     // Storyline translations
     ifYouStart: "If you start with",
     andInvest: "and invest",
@@ -125,6 +132,7 @@ export const compoundTranslations: Record<Language, CompoundTranslation> = {
     targetAmount: "סכום יעד",
     monthlyInvestment: "השקעה חודשית",
     annualReturn: "תשואה שנתית",
+    dividendYield: "השקעה חוזרת של דיבידנדים",
     monthlyRequired: "השקעה חודשית נדרשת",
     initialGrowth: "צמיחת השקעה התחלתית",
     totalContributions: "סך הפקדות",
@@ -163,6 +171,9 @@ export const compoundTranslations: Record<Language, CompoundTranslation> = {
     
     annualReturn_info: "שיעור תשואה שנתי",
     annualReturn_desc: "צמיחת האחוזים השנתית הצפויה של ההשקעות שלך. שיעור זה משתנה לפי סוג ההשקעה. מדד ה-S&P 500 מניב בממוצע כ-10% בשנה. מדד הנאסדק 100 השיג תשואה של 19.7% בין השנים 2020 ל-2025, בעוד שאגרות חוב וחשבונות חיסכון בדרך כלל מציעים תשואות נמוכות יותר עם פחות סיכון.",
+
+    dividendYield_info: "תשואת דיבידנד",
+    dividendYield_desc: "אחוז שנתי מהתיק שלך המשולם כדיבידנדים. כאשר הם מושקעים מחדש מדי רבעון, דיבידנדים אלה מצטברים ומגדילים את התשואות שלך. מדד S&P 500 מניב בממוצע כ-1.5% דיבידנד, בעוד שקרנות דיבידנד גבוהות יכולות להניב 3-5%.",
 
     // Storyline translations
     ifYouStart: "אם תתחיל עם",
