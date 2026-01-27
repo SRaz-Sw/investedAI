@@ -25,11 +25,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-import {
-  calculateMonthlyGrowth,
-  calculateContributionsGrowth,
-  calculateRequiredMonthly,
-} from '@/lib/utils/calculations';
+import { calculateRequiredMonthly } from '@/lib/utils/calculations';
 import { useTranslationStore } from '@/lib/translations';
 import { compoundTranslations } from '@/lib/translations/compound';
 import { CustomInterestSlider } from '../ui/slider-w-landmarks';
@@ -38,12 +34,13 @@ import { LiquidToggle, GooeyFilter } from '@/components/ui/liquid-toggle';
 import { useCurrencyFormatter } from '@/lib/hooks/useCurrencyFormatter';
 
 // Define slider info keys type
-type SliderInfoKeys = 
+type SliderInfoKeys =
   | 'targetAmount'
   | 'monthlyInvestment'
   | 'initialInvestment'
   | 'period'
-  | 'annualReturn';
+  | 'annualReturn'
+  | 'dividendYield';
 
 // Define RefNames type for clickable values
 type RefNames = 'initialInvestment' | 'targetAmount' | 'monthlyInvestment' | 'period' | 'annualReturn';
@@ -65,6 +62,7 @@ interface ChartDataPoint {
   initialGrowth: number;
   contributionsValue: number;
   pureMonthlyInvestment: number;
+  totalDividends: number;
 }
 
 interface TooltipProps {
@@ -103,6 +101,8 @@ export function CompoundInterestCalculator() {
   const [annualReturn, setAnnualReturn] = useState(10);
   const [annualReturnInput, setAnnualReturnInput] = useState('10');
   const [periodInput, setPeriodInput] = useState('10');
+  const [dividendYield, setDividendYield] = useState(0);
+  const [dividendYieldInput, setDividendYieldInput] = useState('0');
   
   // Add drawer state
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -194,6 +194,10 @@ export function CompoundInterestCalculator() {
       title: t.annualReturn_info,
       description: t.annualReturn_desc,
     },
+    dividendYield: {
+      title: t.dividendYield_info,
+      description: t.dividendYield_desc,
+    },
   };
 
   // Add HelpButton component
@@ -259,6 +263,12 @@ export function CompoundInterestCalculator() {
   const chartData = useMemo(() => {
     const data: ChartDataPoint[] = [];
     const totalMonths = investmentPeriod * 12;
+    const monthlyRate = annualReturn / 100 / 12;
+    const quarterlyDividendRate = dividendYield / 100 / 4;
+
+    // For target mode without dividends, we can calculate required monthly
+    // But with dividends, we need to iterate to find the right amount
+    // For simplicity, we'll use the base calculation (dividends are bonus)
     const actualMonthlyInvestment = isTargetMode
       ? calculateRequiredMonthly(
           targetAmount,
@@ -268,27 +278,53 @@ export function CompoundInterestCalculator() {
         )
       : monthlyInvestment;
 
-    for (let month = 0; month <= totalMonths; month++) {
-      const initialGrowth = calculateMonthlyGrowth(
-        initialAmount,
-        annualReturn,
-        month
-      );
-      const contributionsGrowth = calculateContributionsGrowth(
-        actualMonthlyInvestment,
-        annualReturn,
-        month
-      );
-      const totalValue = initialGrowth + contributionsGrowth;
-      const pureMonthlyInvestment = actualMonthlyInvestment * month;
+    // Iterative calculation to properly compound dividends
+    let currentInitialGrowth = initialAmount;
+    let currentContributionsValue = 0;
+    let totalDividendsAccumulated = 0;
+    let pureContributions = 0;
+
+    // Month 0 - starting point
+    data.push({
+      month: 0,
+      label: formatMonthYear(0, 0),
+      totalValue: initialAmount,
+      initialGrowth: initialAmount,
+      contributionsValue: 0,
+      pureMonthlyInvestment: 0,
+      totalDividends: 0,
+    });
+
+    for (let month = 1; month <= totalMonths; month++) {
+      // Apply monthly growth to initial investment portion
+      currentInitialGrowth = currentInitialGrowth * (1 + monthlyRate);
+
+      // Apply monthly growth to contributions portion (including previous dividends)
+      currentContributionsValue = currentContributionsValue * (1 + monthlyRate);
+
+      // Add this month's contribution
+      currentContributionsValue += actualMonthlyInvestment;
+      pureContributions += actualMonthlyInvestment;
+
+      // At the end of each quarter (months 3, 6, 9, 12...), add dividend
+      if (month % 3 === 0 && dividendYield > 0) {
+        const totalPortfolioValue = currentInitialGrowth + currentContributionsValue;
+        const quarterlyDividend = totalPortfolioValue * quarterlyDividendRate;
+        // Dividends go into the contributions bucket (they compound from here)
+        currentContributionsValue += quarterlyDividend;
+        totalDividendsAccumulated += quarterlyDividend;
+      }
+
+      const totalValue = currentInitialGrowth + currentContributionsValue;
 
       data.push({
         month,
         label: formatMonthYear(month % 12, Math.floor(month / 12)),
         totalValue,
-        initialGrowth,
-        contributionsValue: contributionsGrowth,
-        pureMonthlyInvestment,
+        initialGrowth: currentInitialGrowth,
+        contributionsValue: currentContributionsValue,
+        pureMonthlyInvestment: pureContributions,
+        totalDividends: totalDividendsAccumulated,
       });
     }
     return data;
@@ -297,6 +333,7 @@ export function CompoundInterestCalculator() {
     targetAmount,
     monthlyInvestment,
     annualReturn,
+    dividendYield,
     investmentPeriod,
     isTargetMode,
     formatMonthYear,
@@ -614,16 +651,16 @@ export function CompoundInterestCalculator() {
                 </div>
 
                 <div className={`bg-gradient-to-br from-white/70 to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md p-4 rounded-xl border ${
-                  animatingRef === "annualReturn" 
-                    ? 'animate-pulse border-emerald-400 dark:border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)] dark:shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
+                  animatingRef === "annualReturn"
+                    ? 'animate-pulse border-emerald-400 dark:border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)] dark:shadow-[0_0_15px_rgba(16,185,129,0.2)]'
                     : 'border-white/50 dark:border-zinc-700/30'
                 } shadow-md transition-all duration-300`}>
                   <div className="flex items-center">
                     <Label className="text-gray-700 dark:text-gray-300">{`${t.annualReturn} (%)`}</Label>
                     <HelpButton sliderKey="annualReturn" />
                   </div>
-                  <div 
-                    className="pt-2" 
+                  <div
+                    className="pt-2"
                     ref={annualReturnRef}
                   >
                     <SliderWithInput
@@ -634,6 +671,26 @@ export function CompoundInterestCalculator() {
                       }}
                       min={0}
                       max={20}
+                      step={0.1}
+                      formatValue={(value) => value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-white/70 to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md p-4 rounded-xl border border-white/50 dark:border-zinc-700/30 shadow-md transition-all duration-300">
+                  <div className="flex items-center">
+                    <Label className="text-gray-700 dark:text-gray-300">{`${t.dividendYield} (%)`}</Label>
+                    <HelpButton sliderKey="dividendYield" />
+                  </div>
+                  <div className="pt-2">
+                    <SliderWithInput
+                      value={dividendYield}
+                      onValueChange={(value) => {
+                        setDividendYield(value);
+                        setDividendYieldInput(value.toString());
+                      }}
+                      min={0}
+                      max={6}
                       step={0.1}
                       formatValue={(value) => value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
                     />
