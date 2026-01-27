@@ -1,6 +1,6 @@
 /**
  * Real Estate Calculator V2 - Results Panel Component
- * 
+ *
  * Displays:
  * - Year 1 results (with/without leverage)
  * - Three Engines breakdown
@@ -11,24 +11,127 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, Wallet, Home, Zap } from 'lucide-react';
+import { TrendingUp, Wallet, Home, Zap, DollarSign } from 'lucide-react';
 import type { Year1Results, DerivedValues } from '../types';
 import { roundForDisplay } from '../utils/calculations';
 
 interface ResultsPanelProps {
-  year1: Year1Results;
-  derived: DerivedValues;
-  translations: any;
-  formatCurrency: (value: number) => string;
+	year1: Year1Results;
+	derived: DerivedValues;
+	translations: any;
+	formatCurrency: (value: number) => string;
+}
+
+interface EngineRowProps {
+	icon: React.ReactNode;
+	title: string;
+	description: string;
+	value: number;
+	percent: number;
+	color: 'amber' | 'emerald' | 'sky';
+	formatCurrency: (value: number) => string;
+	invested: number;
+	roi: number;
+}
+
+/**
+ * Reusable component for displaying a single engine row with hover ROI reveal
+ */
+function EngineRow({
+	icon,
+	title,
+	description,
+	value,
+	percent,
+	color,
+	formatCurrency,
+	invested,
+	roi,
+}: EngineRowProps) {
+	const colorClasses = {
+		amber: {
+			text: 'text-amber-600 dark:text-amber-400',
+			bg: 'bg-amber-500',
+			roiBg: 'bg-amber-100 dark:bg-amber-900/50',
+		},
+		emerald: {
+			text: 'text-emerald-600 dark:text-emerald-400',
+			bg: 'bg-emerald-500',
+			roiBg: 'bg-emerald-100 dark:bg-emerald-900/50',
+		},
+		sky: {
+			text: 'text-sky-600 dark:text-sky-400',
+			bg: 'bg-sky-500',
+			roiBg: 'bg-sky-100 dark:bg-sky-900/50',
+		},
+	};
+
+	const colors = colorClasses[color];
+
+	return (
+		<div>
+			<div className="flex justify-between items-center mb-2">
+				<div className="flex items-center gap-2">
+					{icon}
+					<span className="font-medium text-gray-900 dark:text-gray-100">
+						{title}
+					</span>
+				</div>
+				<div className="group flex items-center gap-2">
+					{/* ROI info - appears on hover */}
+					<span
+						className={`text-xs ${colors.roiBg} ${colors.text} px-2 py-0.5 rounded-full
+						opacity-0 group-hover:opacity-100
+						max-w-0 group-hover:max-w-xs
+						overflow-hidden whitespace-nowrap
+						transition-all duration-300 ease-out`}
+					>
+						{formatCurrency(invested)} → {roi.toFixed(1)}%
+					</span>
+					{/* Value */}
+					<span className={`font-bold ${colors.text}`}>
+						{formatCurrency(roundForDisplay(value))}
+					</span>
+				</div>
+			</div>
+			<div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+				<div
+					className={`${colors.bg} h-2 rounded-full transition-all duration-500`}
+					style={{
+						width: `${Math.max(0, percent)}%`,
+					}}
+				/>
+			</div>
+			<p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+				{description}
+			</p>
+		</div>
+	);
 }
 
 export function ResultsPanel({
-  year1,
-  derived,
-  translations: t,
-  formatCurrency,
+	year1,
+	derived,
+	translations: t,
+	formatCurrency,
 }: ResultsPanelProps) {
-	const { withLeverage, noLeverage } = year1;
+	const { withLeverage } = year1;
+	const totalInvested = derived.totalCashRequired;
+
+	// Calculate individual ROIs
+	const cashFlowROI =
+		(withLeverage.annualCashFlow / totalInvested) * 100;
+	const appreciationROI =
+		(withLeverage.appreciation / totalInvested) * 100;
+	const principalPaydownROI =
+		(withLeverage.principalPaydown / totalInvested) * 100;
+
+	// Calculate total return
+	const totalReturn =
+		withLeverage.annualCashFlow +
+		withLeverage.appreciation +
+		withLeverage.principalPaydown;
+	const totalROI = (totalReturn / totalInvested) * 100;
 
 	return (
 		<div className="space-y-6">
@@ -49,93 +152,76 @@ export function ResultsPanel({
 
 					<div className="space-y-4">
 						{/* Engine 1: Cash Flow */}
-						<div>
-							<div className="flex justify-between items-center mb-2">
-								<div className="flex items-center gap-2">
-									<Wallet className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-									<span className="font-medium text-gray-900 dark:text-gray-100">
-										{t.engine1Title}
-									</span>
-								</div>
-								<span className="font-bold text-amber-600 dark:text-amber-400">
-									{formatCurrency(
-										roundForDisplay(
-											withLeverage.annualCashFlow,
-										),
-									)}
-								</span>
-							</div>
-							<div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-								<div
-									className="bg-amber-500 h-2 rounded-full transition-all duration-500"
-									style={{
-										width: `${Math.max(0, withLeverage.engines.cashFlow.percent)}%`,
-									}}
-								/>
-							</div>
-							<p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-								{t.engine1Desc}
-							</p>
-						</div>
+						<EngineRow
+							icon={
+								<Wallet className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+							}
+							title={t.engine1Title}
+							description={t.engine1Desc}
+							value={withLeverage.annualCashFlow}
+							percent={withLeverage.engines.cashFlow.percent}
+							color="amber"
+							formatCurrency={formatCurrency}
+							invested={totalInvested}
+							roi={cashFlowROI}
+						/>
 
 						{/* Engine 2: Appreciation */}
-						<div>
-							<div className="flex justify-between items-center mb-2">
-								<div className="flex items-center gap-2">
-									<TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-									<span className="font-medium text-gray-900 dark:text-gray-100">
-										{t.engine2Title}
-									</span>
-								</div>
-								<span className="font-bold text-emerald-600 dark:text-emerald-400">
-									{formatCurrency(
-										roundForDisplay(
-											withLeverage.appreciation,
-										),
-									)}
-								</span>
-							</div>
-							<div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-								<div
-									className="bg-emerald-500 h-2 rounded-full transition-all duration-500"
-									style={{
-										width: `${withLeverage.engines.appreciation.percent}%`,
-									}}
-								/>
-							</div>
-							<p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-								{t.engine2Desc}
-							</p>
-						</div>
+						<EngineRow
+							icon={
+								<TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+							}
+							title={t.engine2Title}
+							description={t.engine2Desc}
+							value={withLeverage.appreciation}
+							percent={withLeverage.engines.appreciation.percent}
+							color="emerald"
+							formatCurrency={formatCurrency}
+							invested={totalInvested}
+							roi={appreciationROI}
+						/>
 
 						{/* Engine 3: Principal Paydown */}
-						<div>
-							<div className="flex justify-between items-center mb-2">
+						<EngineRow
+							icon={
+								<Home className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+							}
+							title={t.engine3Title}
+							description={t.engine3Desc}
+							value={withLeverage.principalPaydown}
+							percent={withLeverage.engines.principalPaydown.percent}
+							color="sky"
+							formatCurrency={formatCurrency}
+							invested={totalInvested}
+							roi={principalPaydownROI}
+						/>
+
+						{/* Total Row */}
+						<div className="pt-4 border-t-2 border-emerald-300 dark:border-emerald-700">
+							<div className="group flex justify-between items-center">
 								<div className="flex items-center gap-2">
-									<Home className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-									<span className="font-medium text-gray-900 dark:text-gray-100">
-										{t.engine3Title}
+									<DollarSign className="w-5 h-5 text-emerald-700 dark:text-emerald-300" />
+									<span className="font-bold text-lg text-gray-900 dark:text-gray-100">
+										Total Return (Year 1)
 									</span>
 								</div>
-								<span className="font-bold text-sky-600 dark:text-sky-400">
-									{formatCurrency(
-										roundForDisplay(
-											withLeverage.principalPaydown,
-										),
-									)}
-								</span>
+								<div className="flex items-center gap-2">
+									{/* ROI info - appears on hover */}
+									<span
+										className="text-xs bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full
+										opacity-0 group-hover:opacity-100
+										max-w-0 group-hover:max-w-xs
+										overflow-hidden whitespace-nowrap
+										transition-all duration-300 ease-out"
+									>
+										{formatCurrency(totalInvested)} → {totalROI.toFixed(1)}%
+									</span>
+									{/* Value */}
+									<span className="font-bold text-lg text-emerald-700 dark:text-emerald-300">
+										{formatCurrency(roundForDisplay(totalReturn))}
+									</span>
+								</div>
 							</div>
-							<div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-								<div
-									className="bg-sky-500 h-2 rounded-full transition-all duration-500"
-									style={{
-										width: `${withLeverage.engines.principalPaydown.percent}%`,
-									}}
-								/>
-							</div>
-							<p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-								{t.engine3Desc}
-							</p>
 						</div>
 					</div>
 				</CardContent>
