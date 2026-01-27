@@ -4,6 +4,7 @@ export interface CommonTranslation {
   // Header
   portfolio: string;
   compound: string;
+  doubling: string;
   tax: string;
   pension: string;
   realestate: string;
@@ -35,6 +36,7 @@ export const commonTranslations: Record<Language, CommonTranslation> = {
     // Header
     portfolio: "Portfolio Loan",
     compound: "Compound Interest",
+    doubling: "Rule of 72",
     tax: "Tax Efficiency",
     pension: "Pension Planning",
     realestate: "Real Estate",
@@ -64,6 +66,7 @@ export const commonTranslations: Record<Language, CommonTranslation> = {
     // Header
     portfolio: "הלוואת תיק",
     compound: "ריבית דריבית",
+    doubling: "כלל 72",
     tax: "יעילות מס",
     pension: "תכנון פנסיה",
     realestate: "נדל\"ן",
