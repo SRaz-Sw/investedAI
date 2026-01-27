@@ -8,6 +8,7 @@ import { inter } from '@/lib/fonts';
 import { Suspense } from 'react';
 import { Loading } from '@/components/loading';
 import { WarningSuppressor } from '@/components/warning-suppressor';
+import { Clarity } from '@/components/clarity';
 
 export const metadata: Metadata = {
   title: 'Investment Calculator Suite',
@@ -55,6 +56,7 @@ export default function RootLayout({
   return (
     <html lang={lang} suppressHydrationWarning className={inter.variable}>
       <body className="font-sans bg-zinc-200 dark:bg-zinc-900">
+        <Clarity />
         <WarningSuppressor />
         <ThemeProvider>
           <div className="flex min-h-screen flex-col">
