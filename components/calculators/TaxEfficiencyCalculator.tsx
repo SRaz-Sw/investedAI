@@ -284,8 +284,8 @@ export function TaxEfficiencyCalculator() {
                     }}
                     tick={{ fill: 'hsl(var(--foreground))' }}
                   />
-                  <Tooltip 
-                    formatter={(value: number) => [formatCurrency(value), '']}
+                  <Tooltip
+                    formatter={(value: number | undefined) => value !== undefined ? [formatCurrency(value), ''] : ['', '']}
                     contentStyle={{
                       backgroundColor: 'hsl(var(--background))',
                       border: '1px solid hsl(var(--border))',

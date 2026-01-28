@@ -1084,12 +1084,12 @@ export function RealEstateCalculator() {
 										/>
 										<Tooltip
 											formatter={(
-												value: number,
-												name: string,
-											) => [
-												formatCurrencySafe(value),
-												name,
-											]}
+												value: number | undefined,
+												name: string | undefined,
+											) => {
+												if (value === undefined || name === undefined) return ['', ''];
+												return [formatCurrencySafe(value), name];
+											}}
 											contentStyle={{
 												backgroundColor:
 													'hsl(var(--background) / 0.95)',
@@ -1200,12 +1200,12 @@ export function RealEstateCalculator() {
 										/>
 										<Tooltip
 											formatter={(
-												value: number,
-												name: string,
-											) => [
-												formatCurrencySafe(value),
-												name,
-											]}
+												value: number | undefined,
+												name: string | undefined,
+											) => {
+												if (value === undefined || name === undefined) return ['', ''];
+												return [formatCurrencySafe(value), name];
+											}}
 											contentStyle={{
 												backgroundColor:
 													'hsl(var(--background) / 0.95)',

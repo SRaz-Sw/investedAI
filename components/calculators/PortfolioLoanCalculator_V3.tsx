@@ -500,11 +500,12 @@ const PortfolioTaxCalculator: React.FC = () => {
 										color: 'hsl(var(--foreground))',
 									}}
 									formatter={(value, name) => {
+										if (value === undefined || name === undefined) return ['', ''];
 										const strategyName = {
 											loanStrategy: 'Loan Strategy',
 											sellStrategy: 'Sell Strategy',
 											netWorth: 'Net Worth (Loan)',
-										}[name];
+										}[name as 'loanStrategy' | 'sellStrategy' | 'netWorth'];
 										return [
 											<span style={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}>{formatCurrencySafe(Number(value))}</span>,
 											<span style={{ color: 'hsl(var(--foreground) / 0.8)' }}>{strategyName}</span>

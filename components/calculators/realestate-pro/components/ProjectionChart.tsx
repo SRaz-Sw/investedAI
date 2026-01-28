@@ -218,12 +218,13 @@ export const ProjectionChart = memo(function ProjectionChart({
                 handleLegendClick(e.dataKey as string);
               }
             }}
-            formatter={(value, entry: LegendFormatterEntry) => {
+            formatter={(value, entry: any) => {
+              if (!entry.dataKey) return value;
               const dataKey = entry.dataKey as ToggleableKey;
               const isHidden = hiddenLines.has(dataKey);
               return (
-                <span 
-                  style={{ 
+                <span
+                  style={{
                     color: isHidden ? '#9ca3af' : entry.color,
                     textDecoration: isHidden ? 'line-through' : 'none',
                     cursor: 'pointer',

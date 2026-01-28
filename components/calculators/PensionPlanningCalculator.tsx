@@ -158,7 +158,8 @@ export function PensionPlanningCalculator() {
     ((inputs.monthlyWithdrawal * 12) / inputs.initialPortfolio) * 100;
 
   // Update the Tooltip formatter to use formatCurrencySafe
-  const tooltipFormatter = useCallback((value: number) => {
+  const tooltipFormatter = useCallback((value: number | undefined) => {
+    if (value === undefined) return ['', ''];
     return [formatCurrencySafe(value), t.portfolioValue];
   }, [formatCurrencySafe, t.portfolioValue]);
 

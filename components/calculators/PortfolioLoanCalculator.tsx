@@ -185,8 +185,8 @@ export function PortfolioLoanCalculator() {
                     }}
                     tick={{ fill: 'hsl(var(--foreground))' }}
                   />
-                  <Tooltip 
-                    formatter={(value: number) => [formatCurrencySafe(value), '']}
+                  <Tooltip
+                    formatter={(value: number | undefined) => value !== undefined ? [formatCurrencySafe(value), ''] : ['', '']}
                     contentStyle={{
                       backgroundColor: 'hsl(var(--background))',
                       border: '1px solid hsl(var(--border))',
