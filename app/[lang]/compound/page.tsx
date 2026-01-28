@@ -3,10 +3,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { CompoundInterestCalculator } from "@/components/calculators/CompoundInterestCalculator";
 import { useTranslationStore } from "@/lib/translations";
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 import { Language } from "@/lib/translations";
 
-export default function CompoundPage({ params: { lang } }: { params: { lang: Language } }) {
+export default function CompoundPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang: langParam } = use(params);
+  const lang = langParam as Language;
   const { setLanguage } = useTranslationStore();
 
   useEffect(() => {

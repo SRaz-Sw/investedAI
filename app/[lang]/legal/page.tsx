@@ -2,17 +2,19 @@
 
 import { useTranslationStore } from "@/lib/translations";
 import { commonTranslations } from "@/lib/translations/common";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { Language } from "@/lib/translations";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function LegalPage({
-  params: { lang },
+  params,
 }: {
-  params: { lang: Language };
+  params: Promise<{ lang: string }>;
 }) {
+  const { lang: langParam } = use(params);
+  const lang = langParam as Language;
   const { direction } = useTranslationStore();
-  const t = commonTranslations[lang as Language];
+  const t = commonTranslations[lang];
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {

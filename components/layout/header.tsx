@@ -140,16 +140,18 @@ export function Header() {
                 
                 return (
                   <NavigationMenuItem key={item.href}>
-                    <Link href={href} legacyBehavior passHref prefetch={true}>
-                      <NavigationMenuLink
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href={href}
+                        prefetch={true}
                         className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors hover:text-foreground/80 theme-transition ${
                           isActive ? "text-foreground font-semibold" : "text-foreground font-medium"
                         }`}
                       >
                         <Icon className={`${isActive ? "h-5 w-5 stroke-[2.5]" : "h-4 w-4 stroke-[1.5]"} theme-transition`} />
                         <span className="theme-transition">{t[item.name]}</span>
-                      </NavigationMenuLink>
-                    </Link>
+                      </Link>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
                 );
               })}

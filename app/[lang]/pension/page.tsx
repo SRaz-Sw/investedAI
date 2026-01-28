@@ -3,11 +3,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { PensionPlanningCalculator } from "@/components/calculators/PensionPlanningCalculator";
 import { useTranslationStore } from "@/lib/translations";
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 import { Language } from "@/lib/translations";
 import { pensionTranslations } from "@/lib/translations/pension";
 
-export default function PensionPage({ params: { lang } }: { params: { lang: Language } }) {
+export default function PensionPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang: langParam } = use(params);
+  const lang = langParam as Language;
   const { setLanguage } = useTranslationStore();
   const t = pensionTranslations[lang];
 

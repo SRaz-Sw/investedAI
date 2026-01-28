@@ -2,12 +2,12 @@
 
 import { useTranslationStore } from "@/lib/translations";
 import { commonTranslations } from "@/lib/translations/common";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { Language } from "@/lib/translations";
 import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Briefcase, Bug, Code, Users, Copy, Check, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { 
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -15,12 +15,14 @@ import {
 } from "@/components/ui/tooltip";
 
 export default function ContactPage({
-  params: { lang },
+  params,
 }: {
-  params: { lang: Language };
+  params: Promise<{ lang: string }>;
 }) {
+  const { lang: langParam } = use(params);
+  const lang = langParam as Language;
   const { direction } = useTranslationStore();
-  const t = commonTranslations[lang as Language];
+  const t = commonTranslations[lang];
   const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();

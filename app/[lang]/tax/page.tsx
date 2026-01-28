@@ -3,10 +3,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { TaxEfficiencyCalculator } from "@/components/calculators/TaxEfficiencyCalculator";
 import { useTranslationStore } from "@/lib/translations";
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 import type { Language } from "@/lib/translations";
 
-export default function TaxPage({ params: { lang } }: { params: { lang: Language } }) {
+export default function TaxPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang: langParam } = use(params);
+  const lang = langParam as Language;
   const { setLanguage } = useTranslationStore();
 
   useEffect(() => {

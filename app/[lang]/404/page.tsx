@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useTranslationStore, Language } from '@/lib/translations';
@@ -8,12 +8,14 @@ import { commonTranslations } from '@/lib/translations/common';
 import { TransparentImage } from '@/components/ui/transparent-image';
 
 export default function NotFoundPage({
-  params: { lang },
+  params,
 }: {
-  params: { lang: Language };
+  params: Promise<{ lang: string }>;
 }) {
+  const { lang: langParam } = use(params);
+  const lang = langParam as Language;
   const { direction } = useTranslationStore();
-  const t = commonTranslations[lang as Language];
+  const t = commonTranslations[lang];
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

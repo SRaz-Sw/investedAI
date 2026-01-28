@@ -8,14 +8,16 @@
 
 import { RealEstateCalculatorPro } from '@/components/calculators/realestate-pro';
 import { useTranslationStore } from '@/lib/translations';
-import { useEffect } from 'react';
+import { useEffect, use } from 'react';
 import { Language } from '@/lib/translations';
 
 export default function RealEstateProPage({
-	params: { lang },
+	params,
 }: {
-	params: { lang: Language };
+	params: Promise<{ lang: string }>;
 }) {
+	const { lang: langParam } = use(params);
+	const lang = langParam as Language;
 	const { setLanguage } = useTranslationStore();
 
 	useEffect(() => {

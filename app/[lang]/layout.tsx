@@ -46,23 +46,24 @@ export async function generateStaticParams() {
   );
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-  params: { lang },
+  params,
 }: {
   children: React.ReactNode;
-  params: { lang: Language };
+  params: Promise<{ lang: string }>;
 }) {
+  const { lang } = await params;
   return (
-    <html lang={lang} suppressHydrationWarning className={inter.variable}>
-      <body className="font-sans bg-zinc-200 dark:bg-zinc-900">
+    <html lang={lang as Language} suppressHydrationWarning className={inter.variable}>
+      <body className="font-sans bg-zinc-200 dark:bg-zinc-900" suppressHydrationWarning>
         <Clarity />
         <WarningSuppressor />
         <ThemeProvider>
           <div className="flex min-h-screen flex-col">
             <Header />
             <Suspense fallback={<Loading />}>
-              <main className="flex-1">{children}</main>
+              <main className="flex-1" suppressHydrationWarning>{children}</main>
             </Suspense>
             <Footer />
           </div>

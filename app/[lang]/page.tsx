@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, use } from 'react';
 import { motion } from 'framer-motion';
 import {
 	ArrowRight,
@@ -252,10 +252,12 @@ const SectionHeader = ({
 };
 
 export default function Home({
-	params: { lang },
+	params,
 }: {
-	params: { lang: Language };
+	params: Promise<{ lang: string }>;
 }) {
+	const { lang: langParam } = use(params);
+	const lang = langParam as Language;
 	const { setLanguage } = useTranslationStore();
 	const t = landingTranslations[lang];
 
