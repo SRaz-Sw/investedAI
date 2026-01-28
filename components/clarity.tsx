@@ -6,6 +6,7 @@ export function Clarity() {
   const clarityId = process.env.NEXT_PUBLIC_CLARITY_ID;
 
   if (!clarityId) {
+    console.warn('Microsoft Clarity: NEXT_PUBLIC_CLARITY_ID is not set');
     return null;
   }
 
