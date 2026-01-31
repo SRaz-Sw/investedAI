@@ -2,8 +2,8 @@
 
 import Script from 'next/script';
 
-// For static exports, env vars must be embedded at build time
-// This ensures the value is baked into the bundle during build
+// For static exports, env vars must be embedded at build time.
+// The value is inlined via next.config.js `env`.
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID || '';
 
 export function Clarity() {
