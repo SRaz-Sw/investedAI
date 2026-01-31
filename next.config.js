@@ -6,7 +6,8 @@ const nextConfig = {
   trailingSlash: true,
   // Optimize production builds
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    // Temporarily disabled to debug Clarity integration
+    // removeConsole: process.env.NODE_ENV === 'production',
   },
 };
 
