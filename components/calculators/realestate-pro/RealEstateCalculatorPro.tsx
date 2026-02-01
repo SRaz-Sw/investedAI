@@ -14,7 +14,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Building2 } from 'lucide-react';
+import { Building2, Archive, Save } from 'lucide-react';
 import {
 	Drawer,
 	DrawerClose,
@@ -41,6 +41,8 @@ import { ProjectionChart } from './components/ProjectionChart';
 import { WealthChart } from './components/WealthChart';
 import { ShareButton } from './components/ShareButton';
 import { ExportButton } from '@/components/calculators/ExportButton';
+import { SavedPropertiesSidebar } from './components/SavedPropertiesSidebar';
+import { SavePropertyDialog } from './components/SavePropertyDialog';
 
 export function RealEstateCalculatorPro() {
 	const { language, direction } = useTranslationStore();
@@ -59,6 +61,10 @@ export function RealEstateCalculatorPro() {
 		title: '',
 		description: '',
 	});
+
+	// Saved properties state
+	const [sidebarOpen, setSidebarOpen] = useState(false);
+	const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 
 	// Debounce inputs for URL updates (avoid too many history updates)
 	const debouncedInputs = useDebouncedValue(inputs, 300);
@@ -96,6 +102,11 @@ export function RealEstateCalculatorPro() {
 		setDrawerOpen(true);
 	};
 
+	// Load property handler
+	const handleLoadProperty = (loadedInputs: RealEstateInputs) => {
+		setInputs(loadedInputs);
+	};
+
 	if (!mounted) return null;
 
 	return (
@@ -120,7 +131,23 @@ export function RealEstateCalculatorPro() {
 								{t.subtitle}
 							</p>
 						</div>
-						<div className="flex gap-2">
+						<div className="flex flex-wrap gap-2 justify-center">
+							<Button
+								variant="outline"
+								size="default"
+								onClick={() => setSidebarOpen(true)}
+							>
+								<Archive className="h-4 w-4 mr-2" />
+								Saved Properties
+							</Button>
+							<Button
+								variant="default"
+								size="default"
+								onClick={() => setSaveDialogOpen(true)}
+							>
+								<Save className="h-4 w-4 mr-2" />
+								Save
+							</Button>
 							<ExportButton
 								inputs={{
 									propertyValue: inputs.purchasePrice,
@@ -367,6 +394,21 @@ export function RealEstateCalculatorPro() {
 					</DrawerFooter>
 				</DrawerContent>
 			</Drawer>
+
+			{/* ===== SAVED PROPERTIES SIDEBAR ===== */}
+			<SavedPropertiesSidebar
+				open={sidebarOpen}
+				onOpenChange={setSidebarOpen}
+				onLoadProperty={handleLoadProperty}
+				currentInputs={inputs}
+			/>
+
+			{/* ===== SAVE PROPERTY DIALOG ===== */}
+			<SavePropertyDialog
+				open={saveDialogOpen}
+				onOpenChange={setSaveDialogOpen}
+				inputs={inputs}
+			/>
 		</div>
 	);
 }
