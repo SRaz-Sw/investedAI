@@ -25,7 +25,7 @@ interface InputPanelProps {
 	inputs: RealEstateInputs;
 	onInputChange: <K extends keyof RealEstateInputs>(
 		key: K,
-		value: number,
+		value: number
 	) => void;
 	sliderConfigs: SliderConfigs;
 	translations: any;
@@ -87,15 +87,23 @@ export function InputPanel({
 				}
 				break;
 			}
+			case 'purchasePrice': {
+				additionalInfo = `Buying at ${formatCurrency(
+					actualPurchasePrice
+				)}`;
+				break;
+			}
 			case 'mortgageRate': {
 				// Monthly mortgage payment (Spitzer/PMT formula)
 				if (loanAmount > 0) {
 					const monthlyPayment = calculateMonthlyMortgage(
 						loanAmount,
 						value, // current mortgage rate from slider
-						inputs.mortgageTermYears,
+						inputs.mortgageTermYears
 					);
-					additionalInfo = `${formatCurrency(monthlyPayment)}/mo`;
+					additionalInfo = `${formatCurrency(
+						monthlyPayment
+					)}/mo`;
 				}
 				break;
 			}
