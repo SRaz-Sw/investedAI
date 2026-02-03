@@ -27,7 +27,6 @@ const navigation = [
   { name: "doubling", href: "/doubling", icon: Timer },
   // { name: "tax", href: "/tax", icon: PieChart },
   { name: "pension", href: "/pension", icon: PiggyBank },
-  { name: "realestate", href: "/realestate", icon: Building2 },
   { name: "realestatePro", href: "/real-estate-pro", icon: Building2 },
 ] as const;
 
