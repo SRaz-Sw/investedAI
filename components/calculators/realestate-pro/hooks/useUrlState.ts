@@ -51,22 +51,40 @@ export function useUrlState(): UseUrlStateResult {
     return inputs;
   }, []); // Only parse on mount
   
-  // Generate shareable URL from current inputs
+  // Generate URL with only non-default values (for browser address bar)
   const generateShareUrl = useCallback((inputs: RealEstateInputs): string => {
     const params = new URLSearchParams();
-    
+
     // Only include non-default values to keep URL short
     (Object.keys(inputs) as Array<keyof RealEstateInputs>).forEach((key) => {
       if (inputs[key] !== DEFAULT_INPUTS[key]) {
         params.set(URL_KEYS[key], String(inputs[key]));
       }
     });
-    
+
     const queryString = params.toString();
-    const baseUrl = typeof window !== 'undefined' 
+    const baseUrl = typeof window !== 'undefined'
       ? `${window.location.origin}${pathname}`
       : pathname;
-    
+
+    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+  }, [pathname]);
+
+  // Generate shareable URL with ALL parameters (including defaults)
+  // This ensures that if defaults change in the future, shared links still work
+  const generateFullShareUrl = useCallback((inputs: RealEstateInputs): string => {
+    const params = new URLSearchParams();
+
+    // Include ALL values (even defaults) to future-proof shared links
+    (Object.keys(inputs) as Array<keyof RealEstateInputs>).forEach((key) => {
+      params.set(URL_KEYS[key], String(inputs[key]));
+    });
+
+    const queryString = params.toString();
+    const baseUrl = typeof window !== 'undefined'
+      ? `${window.location.origin}${pathname}`
+      : pathname;
+
     return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   }, [pathname]);
   
@@ -86,10 +104,10 @@ export function useUrlState(): UseUrlStateResult {
     }
   }, [generateShareUrl]);
   
-  // Copy URL to clipboard
+  // Copy URL to clipboard (with ALL parameters for future-proofing)
   const copyShareUrl = useCallback(async (inputs: RealEstateInputs): Promise<boolean> => {
-    const url = generateShareUrl(inputs);
-    
+    const url = generateFullShareUrl(inputs);
+
     try {
       await navigator.clipboard.writeText(url);
       return true;
@@ -109,7 +127,7 @@ export function useUrlState(): UseUrlStateResult {
         return false;
       }
     }
-  }, [generateShareUrl]);
+  }, [generateFullShareUrl]);
   
   return {
     initialInputs,
