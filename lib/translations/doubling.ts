@@ -12,6 +12,9 @@ export interface DoublingTranslation {
   presetAggressiveGrowth: string;
   ruleOf72Note: string;
   preciseTime: string;
+  afterHowManyYears: string;
+  investmentWillGrow: string;
+  gain: string;
 }
 
 export const doublingTranslations: Record<Language, DoublingTranslation> = {
@@ -27,6 +30,9 @@ export const doublingTranslations: Record<Language, DoublingTranslation> = {
     presetAggressiveGrowth: "Aggressive Growth",
     ruleOf72Note: "The Rule of 72 is an approximation. Actual doubling time = ln(2) / ln(1 + r) where r is the decimal rate.",
     preciseTime: "Precise doubling time is",
+    afterHowManyYears: "After how many years?",
+    investmentWillGrow: "Your investment will grow to",
+    gain: "gain",
   },
   he: {
     title: "מחשבון הכפלת כסף",
@@ -40,5 +46,8 @@ export const doublingTranslations: Record<Language, DoublingTranslation> = {
     presetAggressiveGrowth: "צמיחה אגרסיבית",
     ruleOf72Note: "כלל 72 הוא קירוב. זמן הכפלה מדויק = ln(2) / ln(1 + r) כאשר r הוא השיעור העשרוני.",
     preciseTime: "זמן הכפלה מדויק הוא",
+    afterHowManyYears: "אחרי כמה שנים?",
+    investmentWillGrow: "ההשקעה שלך תצמח ל",
+    gain: "רווח",
   },
 };
