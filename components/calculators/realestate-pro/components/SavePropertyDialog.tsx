@@ -34,6 +34,7 @@ interface SavePropertyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   trigger?: React.ReactNode;
+  onSaveSuccess?: () => void;
 }
 
 /**
@@ -53,6 +54,7 @@ export function SavePropertyDialog({
   open,
   onOpenChange,
   trigger,
+  onSaveSuccess,
 }: SavePropertyDialogProps) {
   const { formatCurrencySafe } = useCurrencyFormatter();
   const { saveProperty } = useSavedPropertiesStore();
@@ -75,6 +77,10 @@ export function SavePropertyDialog({
       saveProperty(propertyName.trim(), inputs);
       onOpenChange(false);
       setPropertyName('');
+      // Trigger callback to open sidebar and show the new entry
+      if (onSaveSuccess) {
+        onSaveSuccess();
+      }
     } finally {
       setIsSaving(false);
     }

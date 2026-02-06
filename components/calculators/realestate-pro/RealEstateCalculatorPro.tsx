@@ -14,7 +14,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Building2, Archive, Save } from 'lucide-react';
+import { Building2, Archive, Save, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import {
 	Drawer,
 	DrawerClose,
@@ -34,6 +34,7 @@ import type { RealEstateInputs } from './types';
 import { DEFAULT_INPUTS } from './types';
 import { useCalculations } from './hooks/useCalculations';
 import { useUrlState, useDebouncedValue } from './hooks/useUrlState';
+import { useLocalStorage } from './hooks/useLocalStorage';
 import { getSliderConfigs } from './utils/sliderConfigs';
 import { InputPanel } from './components/InputPanel';
 import { ResultsPanel } from './components/ResultsPanel';
@@ -62,9 +63,36 @@ export function RealEstateCalculatorPro() {
 		description: '',
 	});
 
-	// Saved properties state
-	const [sidebarOpen, setSidebarOpen] = useState(false);
+	// Saved properties state with persistent storage
+	// Default to true only for desktop, false for mobile
+	const [sidebarOpen, setSidebarOpen] = useLocalStorage(
+		'realestate-sidebar-open',
+		typeof window !== 'undefined' && window.innerWidth >= 1024
+	);
 	const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+
+	// Responsive state - detect desktop vs mobile
+	const [isDesktop, setIsDesktop] = useState(
+		typeof window !== 'undefined' && window.innerWidth >= 1024
+	);
+
+	// Detect screen size for responsive behavior
+	useEffect(() => {
+		const checkIsDesktop = () => {
+			const desktop = window.innerWidth >= 1024; // lg breakpoint
+			setIsDesktop(desktop);
+
+			// Auto-close sidebar when switching from desktop to mobile
+			if (!desktop && sidebarOpen) {
+				setSidebarOpen(false);
+			}
+		};
+
+		checkIsDesktop();
+		window.addEventListener('resize', checkIsDesktop);
+
+		return () => window.removeEventListener('resize', checkIsDesktop);
+	}, [sidebarOpen, setSidebarOpen]);
 
 	// Debounce inputs for URL updates (avoid too many history updates)
 	const debouncedInputs = useDebouncedValue(inputs, 300);
@@ -107,13 +135,53 @@ export function RealEstateCalculatorPro() {
 		setInputs(loadedInputs);
 	};
 
+	// Toggle sidebar handler
+	const handleToggleSidebar = () => {
+		setSidebarOpen(!sidebarOpen);
+	};
+
+	// Handle successful save - open sidebar to show the new entry
+	const handleSaveSuccess = () => {
+		setSidebarOpen(true);
+	};
+
 	if (!mounted) return null;
 
 	return (
 		<div
 			className="font-sans p-4 md:p-8 min-h-screen flex flex-col justify-center items-center"
 			dir={direction()}
+			style={{
+				marginLeft: isDesktop && sidebarOpen ? '320px' : '0',
+				transition: 'margin-left 300ms ease-in-out',
+			}}
 		>
+			{/* Sidebar Toggle Button (Desktop only) */}
+			{isDesktop && (
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={handleToggleSidebar}
+					className="fixed left-4 top-4 z-50 shadow-md"
+					style={{
+						marginLeft: sidebarOpen ? '320px' : '0',
+						transition: 'margin-left 300ms ease-in-out',
+					}}
+				>
+					{sidebarOpen ? (
+						<>
+							<PanelLeftClose className="h-4 w-4 mr-2" />
+							Hide Sidebar
+						</>
+					) : (
+						<>
+							<PanelLeftOpen className="h-4 w-4 mr-2" />
+							Show Sidebar
+						</>
+					)}
+				</Button>
+			)}
+
 			<Card className="w-full max-w-7xl xl:max-w-full overflow-hidden border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-xl bg-white/80 dark:bg-zinc-900/70 rounded-3xl mb-8">
 				<div className="absolute inset-0 bg-gradient-to-tr from-zinc-100/30 via-transparent to-emerald-100/30 dark:from-zinc-900/20 dark:to-emerald-900/20 rounded-3xl"></div>
 
@@ -132,14 +200,17 @@ export function RealEstateCalculatorPro() {
 							</p>
 						</div>
 						<div className="flex flex-wrap gap-2 justify-center">
-							<Button
-								variant="outline"
-								size="default"
-								onClick={() => setSidebarOpen(true)}
-							>
-								<Archive className="h-4 w-4 mr-2" />
-								Saved Properties
-							</Button>
+							{/* Only show Saved Properties button on mobile */}
+							{!isDesktop && (
+								<Button
+									variant="outline"
+									size="default"
+									onClick={() => setSidebarOpen(true)}
+								>
+									<Archive className="h-4 w-4 mr-2" />
+									Saved Properties
+								</Button>
+							)}
 							<Button
 								variant="default"
 								size="default"
@@ -401,6 +472,9 @@ export function RealEstateCalculatorPro() {
 				onOpenChange={setSidebarOpen}
 				onLoadProperty={handleLoadProperty}
 				currentInputs={inputs}
+				mode={isDesktop ? 'fixed' : 'overlay'}
+				onToggleCollapse={handleToggleSidebar}
+				isCollapsed={!sidebarOpen}
 			/>
 
 			{/* ===== SAVE PROPERTY DIALOG ===== */}
@@ -408,6 +482,7 @@ export function RealEstateCalculatorPro() {
 				open={saveDialogOpen}
 				onOpenChange={setSaveDialogOpen}
 				inputs={inputs}
+				onSaveSuccess={handleSaveSuccess}
 			/>
 		</div>
 	);

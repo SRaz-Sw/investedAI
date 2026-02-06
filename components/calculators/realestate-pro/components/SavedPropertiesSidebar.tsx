@@ -11,7 +11,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -45,6 +45,9 @@ import {
   Home,
   Download,
   Upload,
+  X,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { useSavedPropertiesStore } from '@/lib/stores/savedPropertiesStore';
 import { useCurrencyFormatter } from '@/lib/hooks/useCurrencyFormatter';
@@ -57,6 +60,9 @@ interface SavedPropertiesSidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   trigger?: React.ReactNode;
+  mode?: 'fixed' | 'overlay';
+  onToggleCollapse?: () => void;
+  isCollapsed?: boolean;
 }
 
 export function SavedPropertiesSidebar({
@@ -65,6 +71,9 @@ export function SavedPropertiesSidebar({
   open,
   onOpenChange,
   trigger,
+  mode = 'overlay',
+  onToggleCollapse,
+  isCollapsed = false,
 }: SavedPropertiesSidebarProps) {
   const { formatCurrencySafe } = useCurrencyFormatter();
   const {
@@ -152,26 +161,37 @@ export function SavedPropertiesSidebar({
     (a, b) => b.updatedAt - a.updatedAt
   );
 
-  return (
+  // Shared content component
+  const SidebarContent = () => (
     <>
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
+      {/* Header */}
+      <div className="space-y-2 mb-4">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Archive className="h-5 w-5" />
+            <h3 className="text-lg font-semibold">Saved Properties</h3>
+          </div>
+          {mode === 'fixed' && onToggleCollapse && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggleCollapse}
+              className="h-8 w-8 p-0"
+              title="Collapse sidebar"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {properties.length === 0
+            ? 'No saved properties yet'
+            : `${properties.length} saved ${properties.length === 1 ? 'property' : 'properties'}`}
+        </p>
+      </div>
 
-        <SheetContent side="left" className="w-full sm:max-w-md">
-          <SheetHeader className="space-y-2">
-            <SheetTitle className="flex items-center gap-2">
-              <Archive className="h-5 w-5" />
-              Saved Properties
-            </SheetTitle>
-            <SheetDescription>
-              {properties.length === 0
-                ? 'No saved properties yet'
-                : `${properties.length} saved ${properties.length === 1 ? 'property' : 'properties'}`}
-            </SheetDescription>
-          </SheetHeader>
-
-          {/* Export/Import Buttons */}
-          <div className="flex gap-2 mt-4">
+      {/* Export/Import Buttons */}
+      <div className="flex gap-2 mt-4">
             <Button
               variant="outline"
               size="sm"
@@ -214,112 +234,145 @@ export function SavedPropertiesSidebar({
             </div>
           )}
 
-          {/* Properties List */}
-          {properties.length > 0 && (
-            <ScrollArea className="h-[calc(100vh-200px)] pr-4">
-              <div className="space-y-4">
-                {sortedProperties.map((property) => {
-                  const derived = calculateDerivedValues(property.inputs);
-                  const isCurrentProperty = JSON.stringify(property.inputs) === JSON.stringify(currentInputs);
+      {/* Properties List */}
+      {properties.length > 0 && (
+        <ScrollArea className={mode === 'fixed' ? 'h-[calc(100vh-280px)] pr-4' : 'h-[calc(100vh-200px)] pr-4'}>
+          <div className="space-y-4">
+            {sortedProperties.map((property) => {
+              const derived = calculateDerivedValues(property.inputs);
+              const isCurrentProperty = JSON.stringify(property.inputs) === JSON.stringify(currentInputs);
 
-                  return (
-                    <div
-                      key={property.id}
-                      className={`rounded-lg border p-4 transition-colors hover:bg-accent/50 ${
-                        isCurrentProperty ? 'border-primary bg-accent/30' : ''
-                      }`}
-                    >
-                      {/* Property Header */}
-                      <div className="flex items-start justify-between gap-2 mb-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Home className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                            <h4 className="font-semibold text-sm truncate">
-                              {property.name}
-                            </h4>
-                          </div>
-                          {isCurrentProperty && (
-                            <Badge variant="outline" className="text-xs">
-                              Currently Loaded
-                            </Badge>
-                          )}
-                        </div>
+              return (
+                <div
+                  key={property.id}
+                  className={`rounded-lg border p-4 transition-colors hover:bg-accent/50 ${
+                    isCurrentProperty ? 'border-primary bg-accent/30' : ''
+                  }`}
+                >
+                  {/* Property Header */}
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Home className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <h4 className="font-semibold text-sm truncate">
+                          {property.name}
+                        </h4>
                       </div>
-
-                      {/* Key Metrics */}
-                      <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
-                        <div>
-                          <p className="text-muted-foreground">Purchase Price</p>
-                          <p className="font-semibold">
-                            {formatCurrencySafe(property.inputs.purchasePrice)}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Monthly Rent</p>
-                          <p className="font-semibold">
-                            {formatCurrencySafe(property.inputs.monthlyRent)}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Down Payment</p>
-                          <p className="font-semibold">
-                            {formatCurrencySafe(derived.downPayment)}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Cash Required</p>
-                          <p className="font-semibold">
-                            {formatCurrencySafe(derived.totalCashRequired)}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Updated Date */}
-                      <p className="text-xs text-muted-foreground mb-3">
-                        Updated {new Date(property.updatedAt).toLocaleDateString()}
-                      </p>
-
-                      {/* Action Buttons */}
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => handleLoad(property.inputs)}
-                          className="flex-1"
-                        >
-                          <Play className="h-3 w-3 mr-1" />
-                          Load
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDuplicate(property.id)}
-                        >
-                          <Copy className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleRenameClick(property.id, property.name)}
-                        >
-                          <Edit2 className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDeleteClick(property.id)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
+                      {isCurrentProperty && (
+                        <Badge variant="outline" className="text-xs">
+                          Currently Loaded
+                        </Badge>
+                      )}
                     </div>
-                  );
-                })}
-              </div>
-            </ScrollArea>
-          )}
-        </SheetContent>
-      </Sheet>
+                  </div>
+
+                  {/* Key Metrics */}
+                  <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
+                    <div>
+                      <p className="text-muted-foreground">Purchase Price</p>
+                      <p className="font-semibold">
+                        {formatCurrencySafe(property.inputs.purchasePrice)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Monthly Rent</p>
+                      <p className="font-semibold">
+                        {formatCurrencySafe(property.inputs.monthlyRent)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Down Payment</p>
+                      <p className="font-semibold">
+                        {formatCurrencySafe(derived.downPayment)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Cash Required</p>
+                      <p className="font-semibold">
+                        {formatCurrencySafe(derived.totalCashRequired)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Updated Date */}
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Updated {new Date(property.updatedAt).toLocaleDateString()}
+                  </p>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="default"
+                      onClick={() => handleLoad(property.inputs)}
+                      className="flex-1"
+                    >
+                      <Play className="h-3 w-3 mr-1" />
+                      Load
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDuplicate(property.id)}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleRenameClick(property.id, property.name)}
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDeleteClick(property.id)}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </ScrollArea>
+      )}
+    </>
+  );
+
+  // Render based on mode
+  return (
+    <>
+      {/* Fixed Sidebar (Desktop) */}
+      {mode === 'fixed' && open && (
+        <div className={`fixed left-0 top-0 h-screen bg-background border-r border-border z-40 transition-all duration-300 ${isCollapsed ? 'w-0' : 'w-80'} overflow-hidden`}>
+          <div className="p-6 h-full flex flex-col">
+            <SidebarContent />
+          </div>
+        </div>
+      )}
+
+      {/* Overlay Sidebar (Mobile/Sheet) */}
+      {mode === 'overlay' && (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+          {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
+          <SheetContent side="left" className="w-full sm:max-w-md">
+            <SheetHeader className="space-y-2 mb-4">
+              <SheetTitle className="flex items-center gap-2">
+                <Archive className="h-5 w-5" />
+                Saved Properties
+              </SheetTitle>
+              <SheetDescription>
+                {properties.length === 0
+                  ? 'No saved properties yet'
+                  : `${properties.length} saved ${properties.length === 1 ? 'property' : 'properties'}`}
+              </SheetDescription>
+            </SheetHeader>
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
+      )}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
