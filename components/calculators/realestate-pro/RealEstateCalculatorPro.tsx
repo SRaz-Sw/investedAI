@@ -178,8 +178,19 @@ export function RealEstateCalculatorPro() {
 		for (const key of Object.keys(customRanges) as Array<keyof RealEstateInputs>) {
 			const override = customRanges[key];
 			if (configs[key] && override) {
-				if (override.min !== undefined) configs[key] = { ...configs[key], min: override.min };
-				if (override.max !== undefined) configs[key] = { ...configs[key], max: override.max };
+				const updated = { ...configs[key] };
+				if (override.min !== undefined) updated.min = override.min;
+				if (override.max !== undefined) updated.max = override.max;
+				// Auto-adjust step to keep ~100 steps across the new range
+				const range = updated.max - updated.min;
+				if (range > 0) {
+					const raw = range / 100;
+					const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+					const norm = raw / mag;
+					const nice = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+					updated.step = nice * mag;
+				}
+				configs[key] = updated;
 			}
 		}
 		return configs;

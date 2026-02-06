@@ -21,12 +21,6 @@ import {
 import type { RealEstateInputs, SliderConfigs } from '../types';
 import { calculateMonthlyMortgage } from '../utils/calculations';
 
-/** Slider keys that support user-customizable min/max ranges */
-const EDITABLE_RANGE_KEYS = new Set<keyof RealEstateInputs>([
-	'purchasePrice',
-	'monthlyRent',
-]);
-
 interface InputPanelProps {
 	inputs: RealEstateInputs;
 	onInputChange: <K extends keyof RealEstateInputs>(
@@ -207,7 +201,7 @@ export function InputPanel({
 						}}
 						inputClassName="w-[90px]"
 					/>
-					{EDITABLE_RANGE_KEYS.has(key) && onRangeChange && (
+					{onRangeChange && (
 						<div className="flex justify-between items-center mt-1 px-0.5" style={{ marginRight: '106px' }}>
 							{(['min', 'max'] as const).map((field) => {
 								const isEditing = editingRange?.key === key && editingRange?.field === field;
