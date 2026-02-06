@@ -171,12 +171,11 @@ export const ProjectionChart = memo(function ProjectionChart({
   }, [language, t, showPortfolio_CFRI]);
 
   return (
-    <div className="w-full h-[400px] md:h-[500px]">
+    <div className="w-full h-[400px] md:h-[500px] [&_svg]:outline-none [&_svg]:focus:outline-none [&_svg_*]:outline-none [&_svg_*]:focus:outline-none [&_svg]:!cursor-pointer [&_svg_*]:!cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           data={data}
           margin={{ top: 20, right: 60, left: 20, bottom: 20 }}
-          style={{ cursor: 'pointer' }}
           onClick={(e: any) => {
             const label = e?.activeLabel as string | undefined;
             if (label) {
