@@ -21,6 +21,12 @@ import {
 import type { RealEstateInputs, SliderConfigs } from '../types';
 import { calculateMonthlyMortgage } from '../utils/calculations';
 
+/** Slider keys that support user-customizable min/max ranges */
+const EDITABLE_RANGE_KEYS = new Set<keyof RealEstateInputs>([
+	'purchasePrice',
+	'monthlyRent',
+]);
+
 interface InputPanelProps {
 	inputs: RealEstateInputs;
 	onInputChange: <K extends keyof RealEstateInputs>(
@@ -33,6 +39,7 @@ interface InputPanelProps {
 	onAdvancedToggle: (open: boolean) => void;
 	onHelpClick: (title: string, description: string) => void;
 	formatCurrency: (value: number) => string;
+	onRangeChange?: (key: keyof RealEstateInputs, field: 'min' | 'max', value: number) => void;
 }
 
 export function InputPanel({
@@ -44,7 +51,29 @@ export function InputPanel({
 	onAdvancedToggle,
 	onHelpClick,
 	formatCurrency,
+	onRangeChange,
 }: InputPanelProps) {
+	// Track which min/max label is currently being edited
+	const [editingRange, setEditingRange] = React.useState<{
+		key: keyof RealEstateInputs;
+		field: 'min' | 'max';
+	} | null>(null);
+	const [editingValue, setEditingValue] = React.useState('');
+
+	const commitRangeEdit = (key: keyof RealEstateInputs, field: 'min' | 'max') => {
+		const parsed = Number(editingValue.replace(/[^0-9.-]+/g, ''));
+		const config = sliderConfigs[key];
+		if (!isNaN(parsed) && parsed >= 0 && onRangeChange) {
+			// Validate: min must be < current max, max must be > current min
+			if (field === 'min' && parsed < config.max) {
+				onRangeChange(key, 'min', parsed);
+			} else if (field === 'max' && parsed > config.min) {
+				onRangeChange(key, 'max', parsed);
+			}
+		}
+		setEditingRange(null);
+	};
+
 	const HelpButton = ({
 		configKey,
 	}: {
@@ -178,6 +207,42 @@ export function InputPanel({
 						}}
 						inputClassName="w-[90px]"
 					/>
+					{EDITABLE_RANGE_KEYS.has(key) && onRangeChange && (
+						<div className="flex justify-between items-center mt-1 px-0.5" style={{ marginRight: '106px' }}>
+							{(['min', 'max'] as const).map((field) => {
+								const isEditing = editingRange?.key === key && editingRange?.field === field;
+								const rawVal = config[field];
+								const display = (config.prefix || '') + rawVal.toLocaleString() + (config.suffix || '');
+								return isEditing ? (
+									<input
+										key={field}
+										autoFocus
+										type="text"
+										className="w-[80px] text-[10px] px-1 py-0 h-5 rounded border border-primary/40 bg-white dark:bg-zinc-800 text-gray-600 dark:text-gray-300 outline-none focus:border-primary"
+										defaultValue={rawVal.toString()}
+										onFocus={(e) => setEditingValue(e.target.value)}
+										onChange={(e) => setEditingValue(e.target.value)}
+										onBlur={() => commitRangeEdit(key, field)}
+										onKeyDown={(e) => {
+											if (e.key === 'Enter') commitRangeEdit(key, field);
+											if (e.key === 'Escape') setEditingRange(null);
+										}}
+									/>
+								) : (
+									<span
+										key={field}
+										className="text-[10px] text-gray-400 dark:text-gray-500 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 hover:underline decoration-dotted transition-colors"
+										onClick={() => {
+											setEditingRange({ key, field });
+											setEditingValue(rawVal.toString());
+										}}
+									>
+										{display}
+									</span>
+								);
+							})}
+						</div>
+					)}
 				</div>
 			</div>
 		);

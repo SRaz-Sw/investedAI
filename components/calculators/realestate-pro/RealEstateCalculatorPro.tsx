@@ -81,6 +81,9 @@ export function RealEstateCalculatorPro() {
 		'realestate-sidebar-open',
 		typeof window !== 'undefined' && window.innerWidth >= 1024
 	);
+	const [customRanges, setCustomRanges] = useLocalStorage<
+		Record<string, { min?: number; max?: number }>
+	>('realestate-slider-ranges', {});
 	const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 	const [activeTab, setActiveTab] = useState<'keeping' | 'exit'>('keeping');
 
@@ -169,8 +172,18 @@ export function RealEstateCalculatorPro() {
 		);
 	}, [selectedYear, inputs, derived, projection]);
 
-	// Slider configurations
-	const sliderConfigs = getSliderConfigs(t);
+	// Slider configurations (merge defaults with any user-customized ranges)
+	const sliderConfigs = useMemo(() => {
+		const configs = getSliderConfigs(t);
+		for (const key of Object.keys(customRanges) as Array<keyof RealEstateInputs>) {
+			const override = customRanges[key];
+			if (configs[key] && override) {
+				if (override.min !== undefined) configs[key] = { ...configs[key], min: override.min };
+				if (override.max !== undefined) configs[key] = { ...configs[key], max: override.max };
+			}
+		}
+		return configs;
+	}, [t, customRanges]);
 
 	// Input change handler
 	const handleInputChange = <K extends keyof RealEstateInputs>(
@@ -184,6 +197,14 @@ export function RealEstateCalculatorPro() {
 	const openHelpDrawer = (title: string, description: string) => {
 		setDrawerContent({ title, description });
 		setDrawerOpen(true);
+	};
+
+	// Slider range change handler (persisted to localStorage)
+	const handleRangeChange = (key: keyof RealEstateInputs, field: 'min' | 'max', value: number) => {
+		setCustomRanges((prev) => ({
+			...prev,
+			[key]: { ...prev[key], [field]: value },
+		}));
 	};
 
 	// Load property handler
@@ -385,6 +406,7 @@ export function RealEstateCalculatorPro() {
 						onAdvancedToggle={setAdvancedOpen}
 						onHelpClick={openHelpDrawer}
 						formatCurrency={formatCurrencySafe}
+						onRangeChange={handleRangeChange}
 					/>
 
 					{/* ===== PROJECTION CHART ===== */}
