@@ -12,7 +12,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Building2, Archive, Save, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import {
@@ -33,6 +33,8 @@ import { useCurrencyFormatter } from '@/lib/hooks/useCurrencyFormatter';
 import type { RealEstateInputs } from './types';
 import { DEFAULT_INPUTS } from './types';
 import { useCalculations } from './hooks/useCalculations';
+import { useSelectedYearStore } from '@/lib/stores/selectedYearStore';
+import { calculateYearNResults } from './utils/calculations';
 import { useUrlState, useDebouncedValue } from './hooks/useUrlState';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { getSliderConfigs } from './utils/sliderConfigs';
@@ -112,6 +114,13 @@ export function RealEstateCalculatorPro() {
 	// Calculate all derived values and projections
 	const { derived, projection, chartDisplayData } =
 		useCalculations(inputs);
+
+	// Selected year for "3 Engines" drill-down
+	const { selectedYear, setSelectedYear } = useSelectedYearStore();
+	const yearNData = useMemo(() => {
+		if (!selectedYear || selectedYear <= 1) return null;
+		return calculateYearNResults(inputs, derived, selectedYear);
+	}, [selectedYear, inputs, derived]);
 
 	// Slider configurations
 	const sliderConfigs = getSliderConfigs(t);
@@ -426,6 +435,9 @@ export function RealEstateCalculatorPro() {
 						derived={derived}
 						translations={t}
 						formatCurrency={formatCurrencySafe}
+						selectedYear={selectedYear}
+						yearNData={yearNData}
+						onResetYear={() => setSelectedYear(null)}
 					/>
 
 					{/* ===== WEALTH BUILDING CHART ===== */}

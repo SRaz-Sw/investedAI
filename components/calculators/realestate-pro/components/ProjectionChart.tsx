@@ -27,6 +27,7 @@ import {
 } from 'recharts';
 import type { ChartDataPoint } from '../types';
 import { formatAxisValue } from '../utils/calculations';
+import { useSelectedYearStore } from '@/lib/stores/selectedYearStore';
 
 // Type for Legend formatter entry parameter
 interface LegendFormatterEntry {
@@ -68,6 +69,9 @@ export const ProjectionChart = memo(function ProjectionChart({
 }: ProjectionChartProps) {
   // CFRI: Determine if we should show the portfolio line
   const showPortfolio_CFRI = cashFlowReinvestmentRate > 0;
+
+  // Selected year for "3 Engines" drill-down
+  const setSelectedYear = useSelectedYearStore((s) => s.setSelectedYear);
 
   // Track which lines are hidden (toggled off via legend)
   const [hiddenLines, setHiddenLines] = useState<Set<ToggleableKey>>(new Set());
@@ -172,6 +176,16 @@ export const ProjectionChart = memo(function ProjectionChart({
         <ComposedChart
           data={data}
           margin={{ top: 20, right: 60, left: 20, bottom: 20 }}
+          style={{ cursor: 'pointer' }}
+          onClick={(e: any) => {
+            const label = e?.activeLabel as string | undefined;
+            if (label) {
+              const year = parseInt(label.split('.')[0], 10);
+              if (!isNaN(year) && year >= 1) {
+                setSelectedYear(year);
+              }
+            }
+          }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke={COLORS.grid} opacity={0.5} />
           

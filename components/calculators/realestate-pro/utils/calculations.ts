@@ -18,7 +18,7 @@ import type {
 	MonthlyExpenses,
 	ChartDataPoint,
 	ProjectionData,
-	Year1Results,
+	AnnualResults,
 	ThreeEngines,
 } from '../types';
 
@@ -179,10 +179,10 @@ export function calculateMonthlyExpenses(
 /**
  * Calculate detailed Year 1 results including 3 engines breakdown.
  */
-export function calculateYear1Results(
+export function calculateAnnualResults(
 	inputs: RealEstateInputs,
 	derived: DerivedValues
-): Year1Results {
+): AnnualResults {
 	const { monthlyRent, appreciationRate, mortgageRate } = inputs;
 
 	const {
@@ -291,6 +291,121 @@ export function calculateYear1Results(
 			principalPaydown: year1PrincipalPaydown,
 			totalReturn: withLeverageTotalReturn,
 			roi: withLeverageROI,
+			engines,
+		},
+	};
+}
+
+// ============================================================================
+// YEAR N RESULTS CALCULATION (for any arbitrary year)
+// ============================================================================
+
+/**
+ * Calculate the "3 Engines of Profit" breakdown for a specific year N.
+ *
+ * This grows rent, property value, and mortgage balance forward to year N,
+ * then computes the engines for that 12-month period.
+ * Reuses the same math as calculateAnnualResults but at a future state.
+ */
+export function calculateYearNResults(
+	inputs: RealEstateInputs,
+	derived: DerivedValues,
+	year: number
+): AnnualResults {
+	// Year 1 is the default — use the optimized existing function
+	if (year <= 1) return calculateAnnualResults(inputs, derived);
+
+	const { monthlyRent: initialRent, appreciationRate, rentGrowthRate, mortgageRate } = inputs;
+	const { marketValue: initialMarketValue, loanAmount, monthlyMortgage, totalCashRequired } = derived;
+
+	const monthlyInterestRate = mortgageRate / 100 / 12;
+	const monthlyAppreciationFactor = Math.pow(1 + appreciationRate / 100, 1 / 12);
+	const yearlyRentGrowthFactor = 1 + rentGrowthRate / 100;
+
+	// Fast-forward state to the START of the target year
+	let currentValue = initialMarketValue;
+	let currentRent = initialRent;
+	let mortgageBalance = loanAmount;
+	const monthsBeforeTargetYear = (year - 1) * 12;
+
+	for (let m = 0; m < monthsBeforeTargetYear; m++) {
+		// Mortgage amortization
+		if (mortgageBalance > 0) {
+			const interest = mortgageBalance * monthlyInterestRate;
+			const principal = Math.min(monthlyMortgage - interest, mortgageBalance);
+			mortgageBalance = Math.max(0, mortgageBalance - principal);
+		}
+		// Property appreciation (monthly compound)
+		currentValue *= monthlyAppreciationFactor;
+		// Rent grows once per year
+		if (m > 0 && m % 12 === 0) {
+			currentRent *= yearlyRentGrowthFactor;
+		}
+	}
+	// Apply the rent growth at the start of the target year
+	currentRent *= yearlyRentGrowthFactor;
+
+	// Now compute the 12-month engines for the target year
+	const monthlyExpenses = calculateMonthlyExpenses(currentRent, currentValue, inputs);
+
+	// Principal paydown during this year
+	let yearPrincipalPaydown = 0;
+	let balance = mortgageBalance;
+	for (let m = 0; m < 12 && balance > 0; m++) {
+		const interest = balance * monthlyInterestRate;
+		const principal = Math.min(monthlyMortgage - interest, balance);
+		yearPrincipalPaydown += principal;
+		balance -= principal;
+	}
+
+	// With leverage
+	const effectiveMortgage = mortgageBalance > 0 ? monthlyMortgage : 0;
+	const netMonthly = currentRent - monthlyExpenses.total - effectiveMortgage;
+	const annualCashFlow = netMonthly * 12;
+	const appreciation = currentValue * (appreciationRate / 100);
+	const totalReturn = annualCashFlow + appreciation + yearPrincipalPaydown;
+	const roi = totalCashRequired > 0 ? (totalReturn / totalCashRequired) * 100 : 0;
+
+	// No leverage (for completeness — panel only shows withLeverage engines)
+	const noLeverageNet = currentRent - monthlyExpenses.total;
+	const noLeverageCashFlow = noLeverageNet * 12;
+	const noLeverageTotal = noLeverageCashFlow + appreciation;
+	const actualPurchasePrice = initialMarketValue - derived.instantEquity;
+	const noLeverageInvestment = actualPurchasePrice + inputs.closingCosts;
+	const noLeverageROI = noLeverageInvestment > 0 ? (noLeverageTotal / noLeverageInvestment) * 100 : 0;
+
+	// Three engines breakdown
+	const totalEngineValue = annualCashFlow + appreciation + yearPrincipalPaydown;
+	const engines: ThreeEngines = {
+		cashFlow: {
+			value: annualCashFlow,
+			percent: totalEngineValue !== 0 ? (annualCashFlow / totalEngineValue) * 100 : 0,
+		},
+		appreciation: {
+			value: appreciation,
+			percent: totalEngineValue !== 0 ? (appreciation / totalEngineValue) * 100 : 0,
+		},
+		principalPaydown: {
+			value: yearPrincipalPaydown,
+			percent: totalEngineValue !== 0 ? (yearPrincipalPaydown / totalEngineValue) * 100 : 0,
+		},
+	};
+
+	return {
+		noLeverage: {
+			netMonthly: noLeverageNet,
+			annualCashFlow: noLeverageCashFlow,
+			appreciation,
+			totalReturn: noLeverageTotal,
+			roi: noLeverageROI,
+		},
+		withLeverage: {
+			netMonthly: netMonthly,
+			annualCashFlow,
+			appreciation,
+			principalPaydown: yearPrincipalPaydown,
+			totalReturn,
+			roi,
 			engines,
 		},
 	};
@@ -479,7 +594,7 @@ export function generateProjectionData(
 	}
 
 	// === CALCULATE YEAR 1 RESULTS ===
-	const year1 = calculateYear1Results(inputs, derived);
+	const year1 = calculateAnnualResults(inputs, derived);
 
 	// === CALCULATE AVERAGE ANNUAL ROI ===
 	// Average ROI = (Final Net Worth - Initial Investment) / Initial Investment / Years * 100

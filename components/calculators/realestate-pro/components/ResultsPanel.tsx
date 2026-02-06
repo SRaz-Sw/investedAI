@@ -11,15 +11,18 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, Wallet, Home, Zap, DollarSign } from 'lucide-react';
-import type { Year1Results, DerivedValues } from '../types';
+import { TrendingUp, Wallet, Home, Zap, DollarSign, X } from 'lucide-react';
+import type { AnnualResults, DerivedValues } from '../types';
 import { roundForDisplay } from '../utils/calculations';
 
 interface ResultsPanelProps {
-	year1: Year1Results;
+	year1: AnnualResults;
 	derived: DerivedValues;
 	translations: any;
 	formatCurrency: (value: number) => string;
+	selectedYear?: number | null;
+	yearNData?: AnnualResults | null;
+	onResetYear?: () => void;
 }
 
 interface EngineRowProps {
@@ -114,8 +117,14 @@ export function ResultsPanel({
 	derived,
 	translations: t,
 	formatCurrency,
+	selectedYear,
+	yearNData,
+	onResetYear,
 }: ResultsPanelProps) {
-	const { withLeverage } = year1;
+	// Use year N data when a specific year is selected, otherwise default to year 1
+	const displayData = selectedYear && selectedYear > 1 && yearNData ? yearNData : year1;
+	const displayYear = selectedYear && selectedYear > 1 && yearNData ? selectedYear : 1;
+	const { withLeverage } = displayData;
 	const totalInvested = derived.totalCashRequired;
 
 	// Calculate individual ROIs
@@ -138,16 +147,30 @@ export function ResultsPanel({
 			{/* Three Engines Breakdown */}
 			<Card className="bg-gradient-to-br from-emerald-50/80 to-emerald-100/50 dark:from-emerald-950/40 dark:to-emerald-900/20 backdrop-blur-md border border-emerald-200/50 dark:border-emerald-800/30 shadow-lg overflow-hidden">
 				<CardContent className="p-6">
-					<div className="flex items-center gap-2 mb-4">
-						<Zap className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-						<div>
-							<h3 className="text-lg font-semibold text-emerald-900 dark:text-emerald-200">
-								{t.threeEngines}
-							</h3>
-							<p className="text-sm text-emerald-700/70 dark:text-emerald-400/70">
-								{t.threeEnginesDesc}
-							</p>
+					<div className="flex items-center justify-between mb-4">
+						<div className="flex items-center gap-2">
+							<Zap className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+							<div>
+								<h3 className="text-lg font-semibold text-emerald-900 dark:text-emerald-200">
+									{t.threeEngines}
+								</h3>
+								<p className="text-sm text-emerald-700/70 dark:text-emerald-400/70">
+									{t.threeEnginesDesc}
+								</p>
+							</div>
 						</div>
+						{displayYear > 1 && (
+							<button
+								onClick={onResetYear}
+								className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium
+									bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300
+									rounded-full hover:bg-emerald-200 dark:hover:bg-emerald-800/50
+									transition-colors cursor-pointer"
+							>
+								Year {displayYear}
+								<X className="w-3.5 h-3.5" />
+							</button>
+						)}
 					</div>
 
 					<div className="space-y-4">
@@ -202,7 +225,7 @@ export function ResultsPanel({
 								<div className="flex items-center gap-2">
 									<DollarSign className="w-5 h-5 text-emerald-700 dark:text-emerald-300" />
 									<span className="font-bold text-lg text-gray-900 dark:text-gray-100">
-										Total Return (Year 1)
+										Total Return (Year {displayYear})
 									</span>
 								</div>
 								<div className="flex items-center gap-2">

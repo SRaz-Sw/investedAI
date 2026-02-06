@@ -81,7 +81,7 @@ export interface ThreeEngines {
 // YEAR 1 RESULTS
 // ============================================================================
 
-export interface Year1Results {
+export interface AnnualResults {
 	noLeverage: {
 		netMonthly: number;
 		annualCashFlow: number;
@@ -140,7 +140,7 @@ export interface ChartDataPoint {
 export interface ProjectionData {
 	chartData: ChartDataPoint[];
 	summary: {
-		year1: Year1Results;
+		year1: AnnualResults;
 		year15: ChartDataPoint;
 		year30: ChartDataPoint;
 		averageAnnualROI: number;
