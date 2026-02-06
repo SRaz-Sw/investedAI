@@ -40,6 +40,7 @@ import type { RealEstateInputs } from './types';
 import { DEFAULT_INPUTS } from './types';
 import { useCalculations } from './hooks/useCalculations';
 import { useSelectedYearStore } from '@/lib/stores/selectedYearStore';
+import { useSavedPropertiesStore } from '@/lib/stores/savedPropertiesStore';
 import {
 	calculateYearNResults,
 	calculateExitAnalysis,
@@ -81,9 +82,7 @@ export function RealEstateCalculatorPro() {
 		'realestate-sidebar-open',
 		typeof window !== 'undefined' && window.innerWidth >= 1024
 	);
-	const [customRanges, setCustomRanges] = useLocalStorage<
-		Record<string, { min?: number; max?: number }>
-	>('realestate-slider-ranges', {});
+	const { sliderRanges: customRanges, setSliderRange } = useSavedPropertiesStore();
 	const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 	const [activeTab, setActiveTab] = useState<'keeping' | 'exit'>('keeping');
 
@@ -210,12 +209,9 @@ export function RealEstateCalculatorPro() {
 		setDrawerOpen(true);
 	};
 
-	// Slider range change handler (persisted to localStorage)
+	// Slider range change handler (persisted via Zustand store)
 	const handleRangeChange = (key: keyof RealEstateInputs, field: 'min' | 'max', value: number) => {
-		setCustomRanges((prev) => ({
-			...prev,
-			[key]: { ...prev[key], [field]: value },
-		}));
+		setSliderRange(key, field, value);
 	};
 
 	// Load property handler
@@ -565,6 +561,7 @@ export function RealEstateCalculatorPro() {
 				mode={isDesktop ? 'fixed' : 'overlay'}
 				onToggleCollapse={handleToggleSidebar}
 				isCollapsed={!sidebarOpen}
+				sliderConfigs={sliderConfigs}
 			/>
 
 			{/* ===== SAVE PROPERTY DIALOG ===== */}

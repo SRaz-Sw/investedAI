@@ -48,11 +48,13 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Settings,
+  RotateCcw,
 } from 'lucide-react';
 import { useSavedPropertiesStore } from '@/lib/stores/savedPropertiesStore';
 import { useCurrencyFormatter } from '@/lib/hooks/useCurrencyFormatter';
 import { calculateDerivedValues } from '../utils/calculations';
-import type { RealEstateInputs } from '../types';
+import type { RealEstateInputs, SliderConfigs } from '../types';
 
 interface SavedPropertiesSidebarProps {
   onLoadProperty: (inputs: RealEstateInputs) => void;
@@ -63,6 +65,7 @@ interface SavedPropertiesSidebarProps {
   mode?: 'fixed' | 'overlay';
   onToggleCollapse?: () => void;
   isCollapsed?: boolean;
+  sliderConfigs?: SliderConfigs;
 }
 
 export function SavedPropertiesSidebar({
@@ -74,6 +77,7 @@ export function SavedPropertiesSidebar({
   mode = 'overlay',
   onToggleCollapse,
   isCollapsed = false,
+  sliderConfigs,
 }: SavedPropertiesSidebarProps) {
   const { formatCurrencySafe } = useCurrencyFormatter();
   const {
@@ -83,9 +87,13 @@ export function SavedPropertiesSidebar({
     renameProperty,
     exportToJSON,
     importFromJSON,
+    sliderRanges,
+    clearSliderRange,
+    clearAllSliderRanges,
   } = useSavedPropertiesStore();
 
   // Local state for dialogs
+  const [prefsDialogOpen, setPrefsDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
@@ -221,6 +229,36 @@ export function SavedPropertiesSidebar({
           )}
 
           <Separator className="my-4" />
+
+          {/* Preferences Section */}
+          {sliderConfigs && (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Settings className="h-4 w-4 text-muted-foreground" />
+                  <h4 className="text-sm font-medium">Slider Ranges</h4>
+                </div>
+                {Object.keys(sliderRanges).length > 0 && (
+                  <Badge variant="secondary" className="text-[10px]">
+                    {Object.keys(sliderRanges).length} customized
+                  </Badge>
+                )}
+              </div>
+              {Object.keys(sliderRanges).length === 0 ? (
+                <p className="text-xs text-muted-foreground mb-2">All ranges at defaults. Click min/max labels on any slider to customize.</p>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mb-2"
+                  onClick={() => setPrefsDialogOpen(true)}
+                >
+                  View &amp; Manage
+                </Button>
+              )}
+              <Separator className="my-4" />
+            </>
+          )}
 
           {/* Empty State */}
           {properties.length === 0 && (
@@ -423,6 +461,64 @@ export function SavedPropertiesSidebar({
             >
               Rename
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Slider Range Preferences Dialog */}
+      <AlertDialog open={prefsDialogOpen} onOpenChange={setPrefsDialogOpen}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Customized Slider Ranges
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              These slider ranges have been customized from their defaults.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-3 max-h-[50vh] overflow-y-auto py-2">
+            {Object.entries(sliderRanges).map(([key, override]) => {
+              const config = sliderConfigs?.[key as keyof RealEstateInputs];
+              const label = config?.label || key;
+              const prefix = config?.prefix || '';
+              const suffix = config?.suffix || '';
+              const fmt = (v: number) => prefix + v.toLocaleString() + suffix;
+              return (
+                <div key={key} className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium truncate">{label}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {override.min !== undefined && `Min: ${fmt(override.min)}`}
+                      {override.min !== undefined && override.max !== undefined && '  ·  '}
+                      {override.max !== undefined && `Max: ${fmt(override.max)}`}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 flex-shrink-0"
+                    title="Reset to default"
+                    onClick={() => clearSliderRange(key)}
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+          <AlertDialogFooter className="flex-row gap-2 sm:justify-between">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                clearAllSliderRanges();
+                setPrefsDialogOpen(false);
+              }}
+            >
+              Reset All to Defaults
+            </Button>
+            <AlertDialogCancel>Close</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

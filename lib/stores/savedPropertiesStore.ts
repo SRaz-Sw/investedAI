@@ -19,6 +19,9 @@ export interface SavedProperty {
   updatedAt: number; // Unix timestamp
 }
 
+/** User-customized slider range overrides */
+export type SliderRangeOverrides = Record<string, { min?: number; max?: number }>;
+
 /**
  * ExportData - Structure for exported JSON file
  */
@@ -30,6 +33,7 @@ export interface ExportData {
     createdAt: string; // ISO string for JSON serialization
     updatedAt: string; // ISO string for JSON serialization
   }>;
+  sliderRanges?: SliderRangeOverrides; // User-customized slider ranges
   exportDate: string; // ISO string
   version: string; // For future migrations
 }
@@ -50,6 +54,7 @@ export interface ImportResult {
  */
 interface SavedPropertiesStore {
   properties: SavedProperty[];
+  sliderRanges: SliderRangeOverrides;
 
   // CRUD operations
   saveProperty: (name: string, inputs: RealEstateInputs) => string;
@@ -61,6 +66,11 @@ interface SavedPropertiesStore {
   duplicateProperty: (id: string) => string | undefined;
   renameProperty: (id: string, newName: string) => void;
   clearAll: () => void;
+
+  // Slider range overrides
+  setSliderRange: (key: string, field: 'min' | 'max', value: number) => void;
+  clearSliderRange: (key: string) => void;
+  clearAllSliderRanges: () => void;
 
   // Export/Import functions
   exportToJSON: () => void;
@@ -90,6 +100,7 @@ export const useSavedPropertiesStore = create<SavedPropertiesStore>()(
   persist(
     (set, get) => ({
       properties: [],
+      sliderRanges: {},
 
       /**
        * Save a new property
@@ -202,12 +213,41 @@ export const useSavedPropertiesStore = create<SavedPropertiesStore>()(
       },
 
       /**
+       * Set a custom min or max for a slider
+       */
+      setSliderRange: (key, field, value) => {
+        set((state) => ({
+          sliderRanges: {
+            ...state.sliderRanges,
+            [key]: { ...state.sliderRanges[key], [field]: value },
+          },
+        }));
+      },
+
+      /**
+       * Reset a single slider to default range
+       */
+      clearSliderRange: (key) => {
+        set((state) => {
+          const { [key]: _, ...rest } = state.sliderRanges;
+          return { sliderRanges: rest };
+        });
+      },
+
+      /**
+       * Reset all slider ranges to defaults
+       */
+      clearAllSliderRanges: () => {
+        set({ sliderRanges: {} });
+      },
+
+      /**
        * Export all properties to a JSON file
        * Creates a downloadable file with all saved properties
        */
       exportToJSON: () => {
         try {
-          const properties = get().properties;
+          const { properties, sliderRanges } = get();
 
           // Create export data structure with metadata
           const exportData: ExportData = {
@@ -218,6 +258,7 @@ export const useSavedPropertiesStore = create<SavedPropertiesStore>()(
               createdAt: dateToISOString(prop.createdAt),
               updatedAt: dateToISOString(prop.updatedAt),
             })),
+            ...(Object.keys(sliderRanges).length > 0 && { sliderRanges }),
             exportDate: dateToISOString(createCurrentDate()),
             version: '1.0',
           };
@@ -320,9 +361,16 @@ export const useSavedPropertiesStore = create<SavedPropertiesStore>()(
           }
 
           // 6. Merge with existing data and save
+          const updates: Partial<SavedPropertiesStore> = {};
           if (validProperties.length > 0) {
-            const allProperties = [...existingProperties, ...validProperties];
-            set({ properties: allProperties });
+            updates.properties = [...existingProperties, ...validProperties];
+          }
+          // 7. Restore slider range preferences if present
+          if (importData.sliderRanges && typeof importData.sliderRanges === 'object') {
+            updates.sliderRanges = importData.sliderRanges;
+          }
+          if (Object.keys(updates).length > 0) {
+            set(updates);
           }
 
           return {
