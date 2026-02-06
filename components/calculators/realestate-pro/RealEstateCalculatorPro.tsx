@@ -14,7 +14,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Building2, Archive, Save, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import {
+	Building2,
+	Archive,
+	Save,
+	PanelLeftClose,
+	PanelLeftOpen,
+} from 'lucide-react';
 import {
 	Drawer,
 	DrawerClose,
@@ -34,7 +40,10 @@ import type { RealEstateInputs } from './types';
 import { DEFAULT_INPUTS } from './types';
 import { useCalculations } from './hooks/useCalculations';
 import { useSelectedYearStore } from '@/lib/stores/selectedYearStore';
-import { calculateYearNResults, calculateExitAnalysis } from './utils/calculations';
+import {
+	calculateYearNResults,
+	calculateExitAnalysis,
+} from './utils/calculations';
 import { useUrlState, useDebouncedValue } from './hooks/useUrlState';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { getSliderConfigs } from './utils/sliderConfigs';
@@ -125,8 +134,16 @@ export function RealEstateCalculatorPro() {
 
 	// Exit analysis — defaults to full mortgage term when no year is selected
 	const exitAnalysis = useMemo(() => {
-		const exitYear = selectedYear && selectedYear > 0 ? selectedYear : inputs.mortgageTermYears;
-		return calculateExitAnalysis(inputs, derived, projection, exitYear);
+		const exitYear =
+			selectedYear && selectedYear > 0
+				? selectedYear
+				: inputs.mortgageTermYears;
+		return calculateExitAnalysis(
+			inputs,
+			derived,
+			projection,
+			exitYear
+		);
 	}, [selectedYear, inputs, derived, projection]);
 
 	// Slider configurations
@@ -238,17 +255,23 @@ export function RealEstateCalculatorPro() {
 							<ExportButton
 								inputs={{
 									propertyValue: inputs.purchasePrice,
-									belowMarketPercent: inputs.belowMarketPercent,
-									downPaymentPercent: inputs.downPaymentPercent,
+									belowMarketPercent:
+										inputs.belowMarketPercent,
+									downPaymentPercent:
+										inputs.downPaymentPercent,
 									closingCosts: inputs.closingCosts,
 									monthlyRent: inputs.monthlyRent,
 									appreciation: inputs.appreciationRate,
 									mortgageRate: inputs.mortgageRate,
 									mortgageTerm: inputs.mortgageTermYears,
 									rentGrowth: inputs.rentGrowthRate,
-									operatingCostsPercent: (inputs.insuranceTaxMonthly * 12 +
-										inputs.purchasePrice * inputs.maintenancePercent / 100) /
-										inputs.purchasePrice * 100,
+									operatingCostsPercent:
+										((inputs.insuranceTaxMonthly * 12 +
+											(inputs.purchasePrice *
+												inputs.maintenancePercent) /
+												100) /
+											inputs.purchasePrice) *
+										100,
 								}}
 								translations={{
 									exportToExcel: t.exportToExcel,
@@ -361,81 +384,13 @@ export function RealEstateCalculatorPro() {
 								}
 								language={language}
 								translations={t}
-								cashFlowReinvestmentRate={inputs.cashFlowReinvestmentRate}
+								cashFlowReinvestmentRate={
+									inputs.cashFlowReinvestmentRate
+								}
 							/>
 						</CardContent>
 					</Card>
 
-					{/* ===== DERIVED VALUES SUMMARY ===== */}
-					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-						<Card className="bg-gradient-to-br from-white/70 to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md border border-white/50 dark:border-zinc-700/30">
-							<CardContent className="p-4">
-								<p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-									{t.marketValue}
-								</p>
-								<p className="text-lg font-bold text-gray-900 dark:text-gray-100">
-									{formatCurrencySafe(
-										Math.round(derived.marketValue)
-									)}
-								</p>
-							</CardContent>
-						</Card>
-
-						<Card className="bg-gradient-to-br from-emerald-50/70 to-emerald-100/50 dark:from-emerald-900/30 dark:to-emerald-800/20 backdrop-blur-md border border-emerald-200/50 dark:border-emerald-700/30">
-							<CardContent className="p-4">
-								<p className="text-xs text-emerald-700 dark:text-emerald-300 mb-1">
-									{t.totalCashRequired}
-								</p>
-								<p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-									{formatCurrencySafe(
-										Math.round(
-											derived.totalCashRequired
-										)
-									)}
-								</p>
-							</CardContent>
-						</Card>
-
-						<Card className="bg-gradient-to-br from-white/70 to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md border border-white/50 dark:border-zinc-700/30">
-							<CardContent className="p-4">
-								<p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-									{t.instantEquity}
-								</p>
-								<p className="text-lg font-bold text-sky-600 dark:text-sky-400">
-									{formatCurrencySafe(
-										Math.round(derived.instantEquity)
-									)}
-								</p>
-							</CardContent>
-						</Card>
-
-						<Card className="bg-gradient-to-br from-white/70 to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md border border-white/50 dark:border-zinc-700/30">
-							<CardContent className="p-4">
-								<p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-									{t.loanAmount}
-								</p>
-								<p className="text-lg font-bold text-gray-900 dark:text-gray-100">
-									{formatCurrencySafe(
-										Math.round(derived.loanAmount)
-									)}
-								</p>
-							</CardContent>
-						</Card>
-
-						<Card className="bg-gradient-to-br from-white/70 to-zinc-50/70 dark:from-zinc-800/70 dark:to-zinc-900/50 backdrop-blur-md border border-white/50 dark:border-zinc-700/30">
-							<CardContent className="p-4">
-								<p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-									{t.monthlyMortgagePayment}
-								</p>
-								<p className="text-lg font-bold text-gray-900 dark:text-gray-100">
-									{formatCurrencySafe(
-										Math.round(derived.monthlyMortgage)
-									)}
-									{t.perMonth}
-								</p>
-							</CardContent>
-						</Card>
-					</div>
 					{/* ===== RESULTS PANEL ===== */}
 					<ResultsPanel
 						year1={projection.summary.year1}
@@ -465,13 +420,17 @@ export function RealEstateCalculatorPro() {
 							</h3>
 							<WealthChart
 								data={projection.chartData}
-								mortgageTermYears={inputs.mortgageTermYears}
+								mortgageTermYears={
+									inputs.mortgageTermYears
+								}
 								language={language}
 								translations={t}
 								initialMarketValue={derived.marketValue}
 								loanAmount={derived.loanAmount}
 								downPayment={derived.downPayment}
-								cashFlowReinvestmentRate={inputs.cashFlowReinvestmentRate}
+								cashFlowReinvestmentRate={
+									inputs.cashFlowReinvestmentRate
+								}
 							/>
 						</CardContent>
 					</Card>
