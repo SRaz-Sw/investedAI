@@ -34,7 +34,7 @@ import type { RealEstateInputs } from './types';
 import { DEFAULT_INPUTS } from './types';
 import { useCalculations } from './hooks/useCalculations';
 import { useSelectedYearStore } from '@/lib/stores/selectedYearStore';
-import { calculateYearNResults } from './utils/calculations';
+import { calculateYearNResults, calculateExitAnalysis } from './utils/calculations';
 import { useUrlState, useDebouncedValue } from './hooks/useUrlState';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { getSliderConfigs } from './utils/sliderConfigs';
@@ -46,6 +46,7 @@ import { ShareButton } from './components/ShareButton';
 import { ExportButton } from '@/components/calculators/ExportButton';
 import { SavedPropertiesSidebar } from './components/SavedPropertiesSidebar';
 import { SavePropertyDialog } from './components/SavePropertyDialog';
+import { ExitSummaryPanel } from './components/ExitSummaryPanel';
 
 export function RealEstateCalculatorPro() {
 	const { language, direction } = useTranslationStore();
@@ -121,6 +122,12 @@ export function RealEstateCalculatorPro() {
 		if (!selectedYear || selectedYear <= 1) return null;
 		return calculateYearNResults(inputs, derived, selectedYear);
 	}, [selectedYear, inputs, derived]);
+
+	// Exit analysis — defaults to full mortgage term when no year is selected
+	const exitAnalysis = useMemo(() => {
+		const exitYear = selectedYear && selectedYear > 0 ? selectedYear : inputs.mortgageTermYears;
+		return calculateExitAnalysis(inputs, derived, projection, exitYear);
+	}, [selectedYear, inputs, derived, projection]);
 
 	// Slider configurations
 	const sliderConfigs = getSliderConfigs(t);
@@ -438,6 +445,16 @@ export function RealEstateCalculatorPro() {
 						selectedYear={selectedYear}
 						yearNData={yearNData}
 						onResetYear={() => setSelectedYear(null)}
+					/>
+
+					{/* ===== EXIT SUMMARY ===== */}
+					<ExitSummaryPanel
+						exitAnalysis={exitAnalysis}
+						formatCurrency={formatCurrencySafe}
+						translations={t}
+						selectedYear={selectedYear}
+						onResetYear={() => setSelectedYear(null)}
+						mortgageTermYears={inputs.mortgageTermYears}
 					/>
 
 					{/* ===== WEALTH BUILDING CHART ===== */}

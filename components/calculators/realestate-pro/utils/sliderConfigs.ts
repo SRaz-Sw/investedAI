@@ -131,5 +131,23 @@ export function getSliderConfigs(
 			suffix: '%',
 			advanced: true,
 		},
+		sellingCostsPercent: {
+			label: t.sellingCostsPercent,
+			helpText: t.sellingCostsPercent_help,
+			min: 0,
+			max: 10,
+			step: 0.5,
+			suffix: '%',
+			advanced: true,
+		},
+		capitalGainsTaxPercent: {
+			label: t.capitalGainsTax,
+			helpText: t.capitalGainsTax_help,
+			min: 0,
+			max: 40,
+			step: 1,
+			suffix: '%',
+			advanced: true,
+		},
 	};
 }

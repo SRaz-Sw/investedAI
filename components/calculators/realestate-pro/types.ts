@@ -35,6 +35,10 @@ export interface RealEstateInputs {
 	// When > 0, positive monthly cash flow is invested in a portfolio (e.g., S&P 500)
 	// that compounds at this annual rate. Default 0 = cash just accumulates.
 	cashFlowReinvestmentRate: number; // e.g., 8% for S&P 500 historical average
+
+	// Exit scenario
+	sellingCostsPercent: number; // Agent commission + seller closing costs (e.g., 6%)
+	capitalGainsTaxPercent: number; // Capital gains tax rate (0 = disabled)
 }
 
 // ============================================================================
@@ -98,6 +102,35 @@ export interface AnnualResults {
 		roi: number;
 		engines: ThreeEngines;
 	};
+}
+
+// ============================================================================
+// EXIT ANALYSIS
+// ============================================================================
+
+export interface ExitAnalysis {
+	exitYear: number;
+	exitMonth: number;
+
+	// What you put in
+	totalInvested: number;
+
+	// Sale breakdown
+	propertyValueAtExit: number;
+	mortgagePayoff: number;
+	sellingCosts: number;
+	capitalGain: number;
+	capitalGainsTax: number;
+	netSaleProceeds: number;
+
+	// Cash accumulated over hold period
+	totalCashFlow: number;
+
+	// Bottom line
+	totalWalkAway: number;
+	totalProfit: number;
+	totalROI: number;
+	annualizedReturn: number;
 }
 
 // ============================================================================
@@ -184,6 +217,8 @@ export const URL_KEYS: Record<keyof RealEstateInputs, string> = {
 	mortgageRate: 'mi',
 	mortgageTermYears: 'my',
 	cashFlowReinvestmentRate: 'cr', // cash reinvestment rate
+	sellingCostsPercent: 'sc',
+	capitalGainsTaxPercent: 'cg',
 };
 
 // ============================================================================
@@ -205,4 +240,6 @@ export const DEFAULT_INPUTS: RealEstateInputs = {
 	mortgageRate: 6.5,
 	mortgageTermYears: 30,
 	cashFlowReinvestmentRate: 0, // Default 0 = cash accumulates without growth
+	sellingCostsPercent: 6, // 6% agent commission + seller closing costs
+	capitalGainsTaxPercent: 0, // 0 = disabled by default
 };

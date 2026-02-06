@@ -136,6 +136,30 @@ export interface RealEstateProTranslation {
 	accumulatedAppreciation: string;
 	investmentPortfolio: string; // Full portfolio value (ProjectionChart)
 	portfolioGrowth: string; // Growth portion only (WealthChart)
+
+	// Exit Scenario Inputs
+	sellingCostsPercent: string;
+	capitalGainsTax: string;
+	sellingCostsPercent_help: string;
+	capitalGainsTax_help: string;
+
+	// Exit Summary Panel
+	exitSummary: string;
+	exitSummaryDesc: string;
+	youInvested: string;
+	cashToClose: string;
+	saleBreakdown: string;
+	propertyValueAtExit: string;
+	mortgagePayoff: string;
+	sellingCostsLabel: string;
+	capitalGainsTaxLabel: string;
+	netSaleProceeds: string;
+	cashFlowEarned: string;
+	bottomLine: string;
+	totalWalkAway: string;
+	totalProfit: string;
+	annualizedReturn: string;
+	exitAtYear: string;
 }
 
 export const realEstateProTranslations: Record<
@@ -283,6 +307,32 @@ export const realEstateProTranslations: Record<
 		accumulatedAppreciation: 'Appreciation',
 		investmentPortfolio: 'Investment Portfolio',
 		portfolioGrowth: 'Portfolio Growth',
+
+		// Exit Scenario Inputs
+		sellingCostsPercent: 'Selling Costs',
+		capitalGainsTax: 'Capital Gains Tax',
+		sellingCostsPercent_help:
+			'Total costs when selling: agent commission (typically 5-6%) plus seller closing costs',
+		capitalGainsTax_help:
+			'Tax rate on property appreciation profit when you sell. Set to 0 to disable.',
+
+		// Exit Summary Panel
+		exitSummary: 'Exit Summary',
+		exitSummaryDesc: 'What you walk away with if you sell',
+		youInvested: 'You Invested',
+		cashToClose: 'Cash to close',
+		saleBreakdown: 'Sale Breakdown',
+		propertyValueAtExit: 'Property Value',
+		mortgagePayoff: 'Mortgage Payoff',
+		sellingCostsLabel: 'Selling Costs',
+		capitalGainsTaxLabel: 'Capital Gains Tax',
+		netSaleProceeds: 'Net Sale Proceeds',
+		cashFlowEarned: 'Cash Flow Earned',
+		bottomLine: 'Bottom Line',
+		totalWalkAway: 'You Walk Away With',
+		totalProfit: 'Total Profit',
+		annualizedReturn: 'Annualized Return',
+		exitAtYear: 'Exit Year',
 	},
 
 	he: {
@@ -419,5 +469,31 @@ export const realEstateProTranslations: Record<
 		accumulatedAppreciation: 'עליית ערך',
 		investmentPortfolio: 'תיק השקעות',
 		portfolioGrowth: 'צמיחת תיק השקעות',
+
+		// Exit Scenario Inputs
+		sellingCostsPercent: 'עלויות מכירה',
+		capitalGainsTax: 'מס רווחי הון',
+		sellingCostsPercent_help:
+			'עלויות כוללות במכירה: עמלת סוכן (בדרך כלל 5-6%) + עלויות סגירה של המוכר',
+		capitalGainsTax_help:
+			'שיעור מס על רווחי הון ממכירת הנכס. הגדר 0 כדי לבטל.',
+
+		// Exit Summary Panel
+		exitSummary: 'סיכום יציאה',
+		exitSummaryDesc: 'מה תקבל אם תמכור',
+		youInvested: 'השקעת',
+		cashToClose: 'מזומן לסגירה',
+		saleBreakdown: 'פירוט מכירה',
+		propertyValueAtExit: 'שווי נכס',
+		mortgagePayoff: 'סילוק משכנתא',
+		sellingCostsLabel: 'עלויות מכירה',
+		capitalGainsTaxLabel: 'מס רווחי הון',
+		netSaleProceeds: 'תמורת מכירה נטו',
+		cashFlowEarned: 'תזרים שנצבר',
+		bottomLine: 'שורה תחתונה',
+		totalWalkAway: 'יוצא עם',
+		totalProfit: 'רווח כולל',
+		annualizedReturn: 'תשואה שנתית',
+		exitAtYear: 'שנת יציאה',
 	},
 };

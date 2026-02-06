@@ -20,6 +20,7 @@ import type {
 	ProjectionData,
 	AnnualResults,
 	ThreeEngines,
+	ExitAnalysis,
 } from '../types';
 
 // ============================================================================
@@ -633,6 +634,84 @@ export function generateProjectionData(
 			averageAnnualROI,
 			compoundAnnualROI,
 		},
+	};
+}
+
+// ============================================================================
+// EXIT ANALYSIS CALCULATION
+// ============================================================================
+
+/**
+ * Calculate what the investor walks away with if they sell at a given year.
+ *
+ * Reads directly from existing projection chartData — no re-simulation needed.
+ * Accounts for selling costs, capital gains tax, and accumulated cash flow.
+ */
+export function calculateExitAnalysis(
+	inputs: RealEstateInputs,
+	derived: DerivedValues,
+	projectionData: ProjectionData,
+	exitYear: number
+): ExitAnalysis {
+	const { sellingCostsPercent, capitalGainsTaxPercent, closingCosts, cashFlowReinvestmentRate } = inputs;
+	const { totalCashRequired, marketValue } = derived;
+
+	// Clamp exit month to projection bounds
+	const totalMonths = inputs.mortgageTermYears * 12;
+	const exitMonth = Math.min(exitYear * 12, totalMonths);
+	const dataPoint = projectionData.chartData[exitMonth];
+
+	const propertyValueAtExit = dataPoint.propertyValue;
+	const mortgagePayoff = dataPoint.mortgageBalance;
+
+	// Selling costs (agent commission + seller closing costs)
+	const sellingCosts = propertyValueAtExit * (sellingCostsPercent / 100);
+
+	// Capital gains tax on appreciation profit
+	// Cost basis = actual purchase price (what you paid, not market value)
+	const costBasis = marketValue * (1 - inputs.belowMarketPercent / 100);
+	const capitalGain = Math.max(0, propertyValueAtExit - costBasis);
+	const capitalGainsTax = capitalGain * (capitalGainsTaxPercent / 100);
+
+	// Net proceeds from the sale itself
+	const netSaleProceeds = propertyValueAtExit - mortgagePayoff - sellingCosts - capitalGainsTax;
+
+	// Cash flow accumulated over the hold period
+	// cumulativeCashFlow starts at -closingCosts in the projection, but closing costs
+	// are already counted in totalCashRequired (totalInvested), so we add them back
+	// to avoid double-counting.
+	// When CFRI is active, use portfolio value instead (it tracks positive flows + growth).
+	const totalCashFlow = cashFlowReinvestmentRate > 0
+		? dataPoint.portfolioValue_CFRI
+		: dataPoint.cumulativeCashFlow + closingCosts;
+
+	// Bottom line
+	const totalWalkAway = netSaleProceeds + totalCashFlow;
+	const totalProfit = totalWalkAway - totalCashRequired;
+	const totalROI = totalCashRequired > 0
+		? (totalProfit / totalCashRequired) * 100
+		: 0;
+
+	const years = exitMonth / 12;
+	const annualizedReturn = totalCashRequired > 0 && totalWalkAway > 0 && years > 0
+		? (Math.pow(totalWalkAway / totalCashRequired, 1 / years) - 1) * 100
+		: 0;
+
+	return {
+		exitYear,
+		exitMonth,
+		totalInvested: totalCashRequired,
+		propertyValueAtExit,
+		mortgagePayoff,
+		sellingCosts,
+		capitalGain,
+		capitalGainsTax,
+		netSaleProceeds,
+		totalCashFlow,
+		totalWalkAway,
+		totalProfit,
+		totalROI,
+		annualizedReturn,
 	};
 }
 

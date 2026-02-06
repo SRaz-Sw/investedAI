@@ -131,6 +131,14 @@ export function InputPanel({
 				additionalInfo = `${formatCurrency(managementFee)}/mo`;
 				break;
 			}
+			case 'sellingCostsPercent': {
+				// Selling costs in dollars (based on current market value)
+				const sellingCost = inputs.purchasePrice * (value / 100);
+				if (sellingCost > 0) {
+					additionalInfo = `${formatCurrency(sellingCost)}`;
+				}
+				break;
+			}
 			default: {
 				additionalInfo = undefined;
 			}
@@ -195,6 +203,8 @@ export function InputPanel({
 		'maintenancePercent',
 		'closingCosts',
 		'cashFlowReinvestmentRate',
+		'sellingCostsPercent',
+		'capitalGainsTaxPercent',
 	];
 
 	return (
