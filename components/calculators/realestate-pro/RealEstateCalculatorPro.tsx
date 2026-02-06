@@ -12,7 +12,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import {
 	Building2,
@@ -82,6 +82,29 @@ export function RealEstateCalculatorPro() {
 		typeof window !== 'undefined' && window.innerWidth >= 1024
 	);
 	const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+	const [activeTab, setActiveTab] = useState<'keeping' | 'exit'>('keeping');
+
+	// Tab toggle refs for dynamic pill sizing
+	const tabContainerRef = useRef<HTMLDivElement>(null);
+	const keepingRef = useRef<HTMLSpanElement>(null);
+	const exitRef = useRef<HTMLSpanElement>(null);
+	const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
+
+	const measurePill = useCallback(() => {
+		const container = tabContainerRef.current;
+		const activeRef = activeTab === 'keeping' ? keepingRef.current : exitRef.current;
+		if (!container || !activeRef) return;
+		const containerRect = container.getBoundingClientRect();
+		const activeRect = activeRef.getBoundingClientRect();
+		setPillStyle({
+			left: activeRect.left - containerRect.left,
+			width: activeRect.width,
+		});
+	}, [activeTab]);
+
+	useEffect(() => {
+		measurePill();
+	}, [measurePill]);
 
 	// Responsive state - detect desktop vs mobile
 	const [isDesktop, setIsDesktop] = useState(
@@ -391,26 +414,72 @@ export function RealEstateCalculatorPro() {
 						</CardContent>
 					</Card>
 
-					{/* ===== RESULTS PANEL ===== */}
-					<ResultsPanel
-						year1={projection.summary.year1}
-						derived={derived}
-						translations={t}
-						formatCurrency={formatCurrencySafe}
-						selectedYear={selectedYear}
-						yearNData={yearNData}
-						onResetYear={() => setSelectedYear(null)}
-					/>
+					{/* ===== TAB TOGGLE ===== */}
+					<div className="flex justify-center">
+						<div
+							ref={tabContainerRef}
+							className="relative inline-flex bg-gray-100 dark:bg-zinc-800 rounded-full p-1 shadow-inner cursor-pointer select-none"
+							onClick={() => setActiveTab(activeTab === 'keeping' ? 'exit' : 'keeping')}
+						>
+							{/* Sliding pill indicator — measured dynamically */}
+							<div
+								className="absolute top-1 bottom-1 bg-white dark:bg-zinc-700 rounded-full shadow-sm"
+								style={{
+									left: pillStyle.left,
+									width: pillStyle.width,
+									transition: 'left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+								}}
+							/>
+							{/* Labels */}
+							<span
+								ref={keepingRef}
+								className={`relative z-10 px-5 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
+									activeTab === 'keeping'
+										? 'text-gray-900 dark:text-gray-100'
+										: 'text-gray-400 dark:text-gray-500'
+								}`}
+							>
+								{t.tabProfitsForKeeping}
+							</span>
+							<span
+								ref={exitRef}
+								className={`relative z-10 px-5 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
+									activeTab === 'exit'
+										? 'text-gray-900 dark:text-gray-100'
+										: 'text-gray-400 dark:text-gray-500'
+								}`}
+							>
+								{t.tabExitTheDeal}
+							</span>
+						</div>
+					</div>
 
-					{/* ===== EXIT SUMMARY ===== */}
-					<ExitSummaryPanel
-						exitAnalysis={exitAnalysis}
-						formatCurrency={formatCurrencySafe}
-						translations={t}
-						selectedYear={selectedYear}
-						onResetYear={() => setSelectedYear(null)}
-						mortgageTermYears={inputs.mortgageTermYears}
-					/>
+					{/* ===== TAB CONTENT ===== */}
+					<div
+						key={activeTab}
+						className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+					>
+						{activeTab === 'keeping' ? (
+							<ResultsPanel
+								year1={projection.summary.year1}
+								derived={derived}
+								translations={t}
+								formatCurrency={formatCurrencySafe}
+								selectedYear={selectedYear}
+								yearNData={yearNData}
+								onResetYear={() => setSelectedYear(null)}
+							/>
+						) : (
+							<ExitSummaryPanel
+								exitAnalysis={exitAnalysis}
+								formatCurrency={formatCurrencySafe}
+								translations={t}
+								selectedYear={selectedYear}
+								onResetYear={() => setSelectedYear(null)}
+								mortgageTermYears={inputs.mortgageTermYears}
+							/>
+						)}
+					</div>
 
 					{/* ===== WEALTH BUILDING CHART ===== */}
 					<Card className="overflow-hidden border border-white/20 dark:border-white/10 shadow-lg backdrop-blur-md bg-white/90 dark:bg-zinc-900/80 rounded-2xl">

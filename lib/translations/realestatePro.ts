@@ -160,6 +160,10 @@ export interface RealEstateProTranslation {
 	totalProfit: string;
 	annualizedReturn: string;
 	exitAtYear: string;
+
+	// Tab toggle
+	tabProfitsForKeeping: string;
+	tabExitTheDeal: string;
 }
 
 export const realEstateProTranslations: Record<
@@ -333,6 +337,10 @@ export const realEstateProTranslations: Record<
 		totalProfit: 'Total Profit',
 		annualizedReturn: 'Annualized Return',
 		exitAtYear: 'Exit Year',
+
+		// Tab toggle
+		tabProfitsForKeeping: 'Profits for Keeping',
+		tabExitTheDeal: 'Exit the Deal',
 	},
 
 	he: {
@@ -495,5 +503,9 @@ export const realEstateProTranslations: Record<
 		totalProfit: 'רווח כולל',
 		annualizedReturn: 'תשואה שנתית',
 		exitAtYear: 'שנת יציאה',
+
+		// Tab toggle
+		tabProfitsForKeeping: 'רווחים מהחזקה',
+		tabExitTheDeal: 'יציאה מהעסקה',
 	},
 };
